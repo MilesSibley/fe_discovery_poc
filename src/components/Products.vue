@@ -1,13 +1,14 @@
 <template>
     <div>
         <div v-bind:key="product.id" v-for="product in products">
-            <ProductCard />
+            <ProductCard v-bind:product="product" />
         </div>
     </div>
 </template>
 
 <script>
 import ProductCard from './ProductCard.vue';
+
 export default {
     name: "Products",
     components: {
