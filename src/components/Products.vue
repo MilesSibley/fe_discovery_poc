@@ -1,9 +1,11 @@
 <template>
-    <div>
-        <div v-bind:key="product.id" v-for="product in products">
-            <ProductCard v-bind:product="product" />
-        </div>
-    </div>
+    <v-container>
+        <v-row>
+            <v-col :key="product.id" v-for="product in products" cols="12" sm="3">
+                <ProductCard :product="product" v-on:del-product="$emit('del-product', product.id)"/>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script>
