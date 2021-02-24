@@ -1,6 +1,6 @@
 <template>
     <div class="POC">
-        <h1>Scratchpad</h1>
+        <h1 class="page-title">Scratchpad</h1>
         <v-app>
             <v-container class="grey lighten-5">
                 <v-row>

@@ -1,6 +1,6 @@
 <template>
     <div class="POC">
-        <h1>Original POC</h1>
+        <h1 class="page-title">Original POC</h1>
         <Products v-bind:products="products" v-on:del-product="deleteProduct"/>
     </div>
 </template>

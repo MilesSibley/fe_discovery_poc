@@ -5,7 +5,8 @@
             <router-link to="/">Home</router-link> |
             <router-link to="/about">About</router-link> |
             <router-link to="/POC">Original POC</router-link> |
-            <router-link to="/Scratchpad">Scratchpad</router-link>
+            <router-link to="/Scratchpad">Scratchpad</router-link> |
+            <router-link to="/Form">New Product</router-link>
         </div>
     </header>
 </template>
