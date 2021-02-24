@@ -1,13 +1,11 @@
 <template>
-  <FormulateForm
-    class="product-form"
-    v-model="formValues"
-  >
+  <FormulateForm class="product-form" v-model="formValues" >
     <FormulateInput
       name="name"
       type="text"
       label="File Name"
       validation="required"
+      
     />
     <FormulateInput
     name="application"
@@ -42,7 +40,7 @@
         <FormulateInput
         type="submit"
         label="Submit"
-        v-on:click="$emit('create-product', formValues)"
+        @click="createOrUpdate"
         />
         <FormulateInput
         type="button"
@@ -61,14 +59,18 @@
 import axios from 'axios';
 
 export default {
-  data () {
-    return {
-      formValues: {},
-      applications:[],
-      types:[]
-    }
-  },
+    data () {
+        return {
+        formValues: {},
+        applications:[],
+        types:[]
+        }
+    },
     created(){
+        //Set the formvalues to the props that were passed in
+        this.formValues = this.product
+
+        //Call the API to get values for the Application dropdown
         axios.get('https://my-json-server.typicode.com/MilesSibley/JSON-Server/application')
             .then((response) => {
                 var data = response.data;
@@ -78,6 +80,8 @@ export default {
                 }
             })
             .catch(err => console.log(err));
+        
+        //Call the API to get values for the Type dropdown
         axios.get('https://my-json-server.typicode.com/MilesSibley/JSON-Server/type')
             .then((response) => {
                 var data = response.data;
@@ -88,6 +92,18 @@ export default {
             })
             .catch(err => console.log(err));
     },
+    methods: {
+        createOrUpdate(){
+            if(this.formValues.id == null){
+                this.$emit('create-product', this.formValues)
+            }
+            else{
+                this.$emit('update-product', this.formValues)
+            }
+            
+        }
+    },
+    props: ["product"]
 }
 </script>
 

@@ -1,7 +1,7 @@
 <template>
     <div class="POC">
         <h1 class="page-title">Original POC</h1>
-        <Products v-bind:products="products" v-on:del-product="deleteProduct"/>
+        <Products v-bind:products="products" v-on:del-product="deleteProduct" v-on:edit-product="editProduct"/>
     </div>
 </template>
 
@@ -29,6 +29,9 @@ export default {
                 // eslint-disable-next-line no-unused-vars
                 .then(res => console.log(res.status),this.products = this.products.filter( product => product.id !== id))            
                 .catch(err => console.log(err));      
+        },
+        editProduct(product){
+            this.$router.push({name: 'Form', params: {product:product}})   
         }
     }
 }

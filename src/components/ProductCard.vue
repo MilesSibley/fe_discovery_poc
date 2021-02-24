@@ -15,7 +15,7 @@
             </v-btn>
             <v-spacer></v-spacer>
             <v-spacer></v-spacer>
-            <v-btn icon>
+            <v-btn icon v-on:click="$emit('edit-product', product.id)"> 
                 <v-icon>{{ "mdi-pencil" }}</v-icon>
             </v-btn>
             <v-btn icon v-on:click="$emit('del-product', product.id)">

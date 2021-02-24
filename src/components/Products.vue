@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col :key="product.id" v-for="product in products" cols="12" sm="3">
-                <ProductCard :product="product" v-on:del-product="$emit('del-product', product.id)"/>
+                <ProductCard :product="product" v-on:del-product="$emit('del-product', product.id)" v-on:edit-product="$emit('edit-product', product)"/>
             </v-col>
         </v-row>
     </v-container>

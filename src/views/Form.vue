@@ -1,7 +1,7 @@
 <template>
 <div class="edit">
     <h1 class="page-title">Create New Product</h1>
-    <ProductForm v-on:create-product="createProduct" />
+    <ProductForm v-bind:product="product" v-on:create-product="createProduct" v-on:update-product="updateProduct"/>
 </div>
 
 </template>
@@ -22,7 +22,20 @@ export default {
                 .then(res => console.log(res.status))            
                 .catch(err => console.log(err));    
             this.$router.push('POC')  
+        },
+        updateProduct(formValues){
+            axios.put(`https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/${formValues.id}`,formValues)
+                // eslint-disable-next-line no-unused-vars
+                .then(res => console.log(res.status))            
+                .catch(err => console.log(err));    
+            this.$router.push('POC')  
+        }
+    },
+    props: {
+        product:{
+            default: {}
         }
     }
+     
 }
 </script>
