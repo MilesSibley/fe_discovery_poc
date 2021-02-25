@@ -1,6 +1,14 @@
 <template>
   <FormulateForm class="product-form" v-model="formValues" >
     <FormulateInput
+      type="image"
+      name="imageFile"
+      label="Select an image to upload"
+      help="Select a png, jpg or gif to upload."
+      validation="mime:image/jpeg,image/png,image/gif"
+      upload-behavior="delayed"
+    />
+    <FormulateInput
       name="name"
       type="text"
       label="File Name"
