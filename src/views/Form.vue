@@ -9,6 +9,7 @@
 <script>
 import ProductForm from '@/components/ProductForm.vue'
 import axios from 'axios';
+import Swal from "sweetalert2";
 
 export default {
     name: 'Edit',
@@ -18,17 +19,64 @@ export default {
     methods: {
         createProduct(formValues){
             axios.post('https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/',formValues)
-                // eslint-disable-next-line no-unused-vars
-                .then(res => console.log(res.status))            
-                .catch(err => console.log(err));    
-            this.$router.push('POC')  
+                .then((res) => { 
+                    if(res.status == 201){
+                        setTimeout(function () {
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                width: 400,
+                                title: "Prodcut successfully deleted. Response code: " + res.status,
+                                showConfirmButton: false,
+                                timer: 1500,
+                            });
+                        }, 500);
+                        
+                        this.$router.push('POC')  
+                    }
+                    else{
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Something went wrong... Response code: " + res.status,
+                            showConfirmButton: false,
+                            timer: 1500,
+                            width: 400,
+                        });
+                    }
+                })
+                .catch(err => console.log(err));  
+            
         },
         updateProduct(formValues){
             axios.put(`https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/${formValues.id}`,formValues)
-                // eslint-disable-next-line no-unused-vars
-                .then(res => console.log(res.status))            
-                .catch(err => console.log(err));    
-            this.$router.push('POC')  
+                .then((res) => { 
+                    if(res.status == 200){
+                        setTimeout(function () {
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                width: 400,
+                                height:200,
+                                title: "Prodcut successfully deleted. Response code: " + res.status,
+                                showConfirmButton: false,
+                                timer: 1500,
+                            });
+                        }, 500);
+                        
+                        this.$router.push('POC')  
+                    }
+                    else{
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Something went wrong... Response code: " + res.status,
+                            showConfirmButton: false,
+                            timer: 1500,
+                        });
+                    }
+                })
+                .catch(err => console.log(err));   
         }
     },
     props: {

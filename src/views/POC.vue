@@ -1,13 +1,19 @@
 <template>
-    <div class="POC">
-        <h1 class="page-title">Original POC</h1>
-        <Products v-bind:products="products" v-on:del-product="deleteProduct" v-on:edit-product="editProduct"/>
-    </div>
+  <div class="POC">
+    <h1 class="page-title">Original POC</h1>
+    <Products
+      v-bind:products="products"
+      v-on:del-product="deleteProduct"
+      v-on:edit-product="editProduct"
+    />
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
 import Products from '../components/Products.vue'
+import Swal from "sweetalert2";
+
 export default {
     name: 'Home',
     components:{
@@ -26,9 +32,33 @@ export default {
     methods: {
         deleteProduct(id){
             axios.delete(`https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/${id}`)
-                // eslint-disable-next-line no-unused-vars
-                .then(res => console.log(res.status),this.products = this.products.filter( product => product.id !== id))            
-                .catch(err => console.log(err));      
+                .then((res) => { 
+                    if(res.status == 200){
+                        setTimeout(function () {
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                width: 400,
+                                title: "Prodcut successfully deleted. Response code: " + res.status,
+                                showConfirmButton: false,
+                                timer: 1500,
+                            });
+                        }, 500);
+                        
+                        //Filter out the deleted product from the view
+                        this.products = this.products.filter( product => product.id !== id);
+                    }
+                    else{
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Something went wrong... Response code: " + res.status,
+                            showConfirmButton: false,
+                            timer: 1500,
+                        });
+                    }
+                })
+                .catch(err => console.log(err));
         },
         editProduct(product){
             this.$router.push({name: 'Form', params: {product:product}})   
@@ -38,5 +68,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
