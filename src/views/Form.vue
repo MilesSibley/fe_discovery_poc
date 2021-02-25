@@ -1,19 +1,11 @@
 <template>
   <div class="edit">
     <h1 class="page-title">Create New Product</h1>
-    <v-container>
-      <v-row>
-        <v-spacer></v-spacer>
-        <v-col cols="8">
-          <v-spacer></v-spacer>
-          <ProductForm
-            v-bind:product="product"
-            v-on:create-product="createProduct"
-            v-on:update-product="updateProduct"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
+    <ProductForm
+      v-bind:product="product"
+      v-on:create-product="createProduct"
+      v-on:update-product="updateProduct"
+    />
   </div>
 </template>
 
