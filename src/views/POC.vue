@@ -1,11 +1,18 @@
 <template>
   <div class="POC">
-    <h1 class="page-title">Original POC</h1>
-    <Products
-      v-bind:products="products"
-      v-on:del-product="deleteProduct"
-      v-on:edit-product="editProduct"
-    />
+    <v-container>
+      <v-row>
+        <v-spacer></v-spacer>
+        <v-col cols="11">
+        <h1 class="page-title">Original POC</h1>
+        <Products
+        v-bind:products="products"
+        v-on:del-product="deleteProduct"
+        v-on:edit-product="editProduct"
+        />
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
