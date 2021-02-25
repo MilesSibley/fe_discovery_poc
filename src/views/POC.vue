@@ -3,10 +3,11 @@
     <v-container>
         <v-row>
             <v-col cols="1"/>
-            <v-col cols="9">
+            <v-col cols="7">
                 <h1 >Original POC</h1>
             </v-col>
-            <v-col cols="1">
+            <v-col cols="3">
+                <SearchBar/>
                 <v-btn icon @click="$router.push('Form')">
                     <v-icon x-large>{{ "mdi-plus" }}</v-icon>
                 </v-btn>
@@ -30,12 +31,14 @@
 <script>
 import axios from 'axios';
 import Products from '../components/Products.vue'
+import SearchBar from '../components/SearchBar.vue'
 import Swal from "sweetalert2";
 
 export default {
     name: 'Home',
     components:{
-        Products
+        Products,
+        SearchBar
     },
     data(){
         return{
