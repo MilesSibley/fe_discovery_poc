@@ -1,6 +1,5 @@
 <template>
-    
-    <v-card class="mx-auto" max-width="344">
+    <v-card class="mx-auto" max-width="344" min-width="250">
         <v-img v-bind:src="product.image" height="200px"></v-img>
         <v-card-title>
             <v-icon class="active status-icon" v-if="product.imageStatus == 'Active'">{{ "mdi-check" }}</v-icon>
