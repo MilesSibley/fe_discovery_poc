@@ -1,16 +1,27 @@
 <template>
   <div class="POC">
     <v-container>
+        <v-row>
+            <v-col cols="1"/>
+            <v-col cols="9">
+                <h1 >Original POC</h1>
+            </v-col>
+            <v-col cols="1">
+                <v-btn icon @click="$router.push('Form')">
+                    <v-icon x-large>{{ "mdi-plus" }}</v-icon>
+                </v-btn>
+            </v-col> 
+        </v-row>
       <v-row>
-        <v-spacer></v-spacer>
-        <v-col cols="11">
-        <h1 class="page-title">Original POC</h1>
-        <Products
-        v-bind:products="products"
-        v-on:del-product="deleteProduct"
-        v-on:edit-product="editProduct"
-        />
+        <v-col cols="1"/>
+        <v-col cols="10">
+            <Products
+            v-bind:products="products"
+            v-on:del-product="deleteProduct"
+            v-on:edit-product="editProduct"
+            />
         </v-col>
+        <v-col cols="1"/>
       </v-row>
     </v-container>
   </div>

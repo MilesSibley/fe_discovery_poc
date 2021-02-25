@@ -11,8 +11,12 @@
               label="Select an image to upload"
               help="Select a png, jpg or gif to upload."
               validation="mime:image/jpeg,image/png,image/gif"
+              v-if="!editMode"
             />
-          </FormulateForm>
+            <center>
+              <h4 v-if="editMode">{{this.formValues.name}}</h4>
+            </center>
+          </FormulateForm>          
         </v-col>
         <v-col cols="3">
           <FormulateForm class="product-form" v-model="formValues">
@@ -20,7 +24,8 @@
               name="name"
               type="text"
               label="File Name"
-              validation="required"
+              validation="required|max:100"
+              v-if="!editMode"
             />
             <FormulateInput
               name="application"
@@ -42,7 +47,7 @@
               name="legendTitle"
               type="textarea"
               label="Legend Title"
-              validation="required"
+              validation="required|max:500"
             />
             <FormulateInput
               name="imageStatus"
@@ -76,12 +81,18 @@ export default {
       formValues: {},
       applications: [],
       types: [],
+      editMode: false
     };
   },
   created() {
     //Set the formvalues to the props that were passed in
     this.formValues = this.product;
+    
+    if(this.formValues != null ){
+      this.editMode = true
+    }
 
+    console.log("newProducts mode check  " + this.newProductMode)
     //Call the API to get values for the Application dropdown
     axios
       .get(

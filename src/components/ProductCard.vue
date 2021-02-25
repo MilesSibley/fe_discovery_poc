@@ -3,6 +3,8 @@
     <v-card class="mx-auto" max-width="344">
         <v-img v-bind:src="product.image" height="200px"></v-img>
         <v-card-title>
+            <v-icon class="active status-icon" v-if="product.imageStatus == 'Active'">{{ "mdi-check" }}</v-icon>
+            <v-icon class="inactive status-icon" v-if="product.imageStatus == 'Inactive'">{{ "mdi-close-box-outline"}}</v-icon>
             {{ product.name }}
         </v-card-title>
         <v-card-subtitle>
@@ -16,10 +18,10 @@
             <v-spacer></v-spacer>
             <v-spacer></v-spacer>
             <v-btn icon v-on:click="$emit('edit-product', product.id)"> 
-                <v-icon>{{ "mdi-pencil" }}</v-icon>
+                <v-icon class="action-icon">{{ "mdi-pencil" }}</v-icon>
             </v-btn>
             <v-btn icon v-on:click="$emit('del-product', product.id)">
-                <v-icon>{{ "mdi-delete" }}</v-icon>
+                <v-icon class="action-icon">{{ "mdi-delete" }}</v-icon>
             </v-btn>
         </v-card-actions>
         <v-expand-transition>
@@ -44,4 +46,18 @@ export default {
 </script>
 
 <style scoped>
+i.v-icon.v-icon.action-icon:hover{
+  color: #1161A0;
+}
+
+i.v-icon.v-icon.status-icon{
+    padding-right: 5px;
+}
+
+i.v-icon.v-icon.status-icon.active{
+  color: green;
+} 
+i.v-icon.v-icon.status-icon.inactive{
+  color: darkred;
+}
 </style>
