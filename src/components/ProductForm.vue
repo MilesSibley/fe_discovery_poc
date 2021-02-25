@@ -1,66 +1,66 @@
 <template>
-  <FormulateForm class="product-form" v-model="formValues" >
+  <div>
     <FormulateInput
-      type="image"
-      name="imageFile"
-      label="Select an image to upload"
-      help="Select a png, jpg or gif to upload."
-      validation="mime:image/jpeg,image/png,image/gif"
-      upload-behavior="delayed"
-    />
-    <FormulateInput
-      name="name"
-      type="text"
-      label="File Name"
-      validation="required"
-      
-    />
-    <FormulateInput
-    name="application"
-    type="select"
-    :options="applications"
-    placeholder="Select an option"
-    label="Application"
-    validation="required"
-    />
-    <FormulateInput
-      name="type"
+        type="image"
+        name="headshot"
+        label="Select an image to upload"
+        help="Select a png, jpg or gif to upload."
+        validation="mime:image/jpeg,image/png,image/gif" />
+    <FormulateForm class="product-form" v-model="formValues" >
+      <FormulateInput
+        name="name"
+        type="text"
+        label="File Name"
+        validation="required"
+        
+      />
+      <FormulateInput
+      name="application"
       type="select"
-      :options="types"
+      :options="applications"
       placeholder="Select an option"
-      label="Type"
+      label="Application"
       validation="required"
-    />
-    <FormulateInput
-    name="legendTitle"
-    type="textarea"
-    label="Legend Title"
-    validation="required"
-    />
-    <FormulateInput
-    name="imageStatus"
-    :options="['Active','Inactive']"
-    type="radio"
-    label="Image Status"
-    validation="required"
-    />
-    <div class="double-wide">
-        <FormulateInput
-        type="submit"
-        label="Submit"
-        @click="createOrUpdate"
-        />
-        <FormulateInput
-        type="button"
-        label="Cancel"
-        @click="$router.push('POC')"
-        />        
-    </div>
-    <pre
-      class="code"
-      v-text="formValues"
-    />
-  </FormulateForm>
+      />
+      <FormulateInput
+        name="type"
+        type="select"
+        :options="types"
+        placeholder="Select an option"
+        label="Type"
+        validation="required"
+      />
+      <FormulateInput
+      name="legendTitle"
+      type="textarea"
+      label="Legend Title"
+      validation="required"
+      />
+      <FormulateInput
+      name="imageStatus"
+      :options="['Active','Inactive']"
+      type="radio"
+      label="Image Status"
+      validation="required"
+      />
+      <div class="double-wide">
+          <FormulateInput
+          type="submit"
+          label="Submit"
+          @click="createOrUpdate"
+          />
+          <FormulateInput
+          type="button"
+          label="Cancel"
+          @click="$router.push('POC')"
+          />        
+      </div>
+      <pre
+        class="code"
+        v-text="formValues"
+      />
+    </FormulateForm>
+  </div>
 </template>
 
 <script>

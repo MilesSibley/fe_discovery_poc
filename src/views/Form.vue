@@ -99,7 +99,7 @@ export default {
   },
   props: {
     product: {
-      default: {},
+      default: null,
     },
   },
 };
