@@ -3,21 +3,23 @@
     <v-container>
         <v-row>
             <v-col cols="1"/>
-            <v-col cols="7">
+            <v-col cols="6">
                 <h1 >Original POC</h1>
             </v-col>
-            <v-col cols="3">
-                <SearchBar/>
+            <v-col cols="2">
+                <SearchBar v-on:search="filterProductList"/>
+            </v-col>
+            <v-col cols="1">
                 <v-btn icon @click="$router.push('Form')">
-                    <v-icon x-large>{{ "mdi-plus" }}</v-icon>
+                    <v-icon large>{{ "mdi-plus" }}</v-icon>
                 </v-btn>
-            </v-col> 
+            </v-col>
         </v-row>
       <v-row>
         <v-col cols="1"/>
         <v-col cols="10">
             <Products
-            v-bind:products="products"
+            v-bind:products="filteredProductList"
             v-on:del-product="deleteProduct"
             v-on:edit-product="editProduct"
             />
@@ -42,12 +44,16 @@ export default {
     },
     data(){
         return{
-            products:[]
+            productList:[],
+            filteredProductList:[]
         }      
     },
     created(){
         axios.get('https://my-json-server.typicode.com/MilesSibley/JSON-Server/products')
-        .then(res => this.products = res.data)
+        .then(res => {
+            this.productList = res.data 
+            this.filteredProductList = res.data
+        })
         .catch(err => console.log(err));
     },
     methods: {
@@ -67,7 +73,7 @@ export default {
                         }, 500);
                         
                         //Filter out the deleted product from the view
-                        this.products = this.products.filter( product => product.id !== id);
+                        this.filteredProductList = this.filteredProductList.filter( product => product.id !== id);
                     }
                     else{
                         Swal.fire({
@@ -83,6 +89,16 @@ export default {
         },
         editProduct(product){
             this.$router.push({name: 'Form', params: {product:product}})   
+        },
+        filterProductList(filterOnValue){
+            if(filterOnValue == ''){
+                this.filteredProductList = this.productList
+            }
+            else{
+                this.filteredProductList = this.productList.filter( product => { return (product.name.toLowerCase().includes(filterOnValue.toLowerCase()) ||
+                                                                                        product.fileName.toLowerCase().includes(filterOnValue.toLowerCase()))
+                                                                               });
+            }
         }
     }
 }

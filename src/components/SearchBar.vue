@@ -1,42 +1,23 @@
 <template>
-<span>
-    <input type="text" class="searchTerm" placeholder="Search">
+<span class="search-bar">
+    <!-- <input type="text" class="search-term" placeholder="Search" v-model="searchValue" v-on:input="$emit('search',searchValue)"> -->
+      <v-text-field hide-details prepend-icon="mdi-magnify" single-line placeholder="Search" v-model="searchValue" v-on:input="$emit('search',searchValue)">
+      </v-text-field>
 </span>
 </template>
 
 <script>
 export default {
-    data(){
-        return{
-            searchValue:''
-        }
-    }
-}
+  data() {
+    return {
+      searchValue: "",
+    };
+  },
+};
 </script>
 
 <style scoped>
-@import url(https://fonts.googleapis.com/css?family=Open+Sans);
-
-
-.searchTerm {
-  border: 1px solid black;
-  padding: 5px;
-  height: 24px;
-  border-radius: 5px;
-  outline: none;
-  color: darkgray;
-}
-
-.searchTerm:focus{
-  color: lightgray;
-}
-
-/*Resize the wrap to see the search bar change!*/
-.wrap{
-  width: 30%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.v-input{
+  padding-top:0px;
 }
 </style>
