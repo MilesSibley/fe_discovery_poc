@@ -33,6 +33,12 @@ const routes = [
     name: 'Form',
     component: () => import('../views/Form.vue'),
     props: true
+  },
+  {
+    path: '/ImageUploader',
+    name: 'ImageUploader',
+    component: () => import('../views/ImageUploader.vue'),
+    props: true
   }
 ]
 
