@@ -4,7 +4,9 @@
         <v-spacer></v-spacer>
         <v-col cols="3">
           <FormulateForm class="product-form">
-            <img class="product-image" v-if="formValues" v-bind:src="formValues.image"/>
+            <center>
+              <img class="product-image" v-if="imageSrc != ''" v-bind:src="imageSrc"/>
+            </center>
             <FormulateInput
               type="image"
               name="headshot"
@@ -12,6 +14,7 @@
               help="Select a png, jpg or gif to upload."
               validation="mime:image/jpeg,image/png,image/gif"
               v-if="!editMode"
+              v-on:file-upload-complete="setProductImage"
             />
             <center>
               <h4 v-if="editMode">{{this.formValues.name}}</h4>
@@ -81,7 +84,8 @@ export default {
       formValues: {},
       applications: [],
       types: [],
-      editMode: false
+      editMode: false,
+      imageSrc: '',
     };
   },
   created() {
@@ -89,10 +93,12 @@ export default {
     this.formValues = this.product;
     
     if(this.formValues != null ){
-      this.editMode = true
+      this.editMode = true;      
+      this.imageSrc= this.formValues.image
     }
 
-    console.log("newProducts mode check  " + this.newProductMode)
+
+
     //Call the API to get values for the Application dropdown
     axios
       .get(
@@ -125,6 +131,9 @@ export default {
         this.$emit("update-product", this.formValues);
       }
     },
+    setProductImage(payload){
+     this.imageSrc = payload.__ob__.value.previewData
+    }
   },
   props: ["product"],
 };
