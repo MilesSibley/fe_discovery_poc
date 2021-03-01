@@ -19,7 +19,7 @@
         <v-col cols="1"/>
         <v-col cols="10">
             <Products
-            v-bind:products="filteredProductList"
+            v-bind:products="filteredProductDetails"
             v-on:del-product="deleteProduct"
             v-on:edit-product="editProduct"
             />
@@ -45,14 +45,25 @@ export default {
     data(){
         return{
             productList:[],
-            filteredProductList:[]
+            productDetails:[],
+            filteredProductDetails:[]
         }      
     },
     created(){
         axios.get('https://my-json-server.typicode.com/MilesSibley/JSON-Server/products')
         .then(res => {
             this.productList = res.data 
-            this.filteredProductList = res.data
+            for (var i = 0; i < this.productList.length; i++) {
+                this.productDetails.push({
+                    id: this.productList[i].id,
+                    image: this.productList[i].image,
+                    title: this.productList[i].name,
+                    subtitle: this.productList[i].fileName,
+                    details: this.productList[i].legendTitle,
+                    status: this.productList[i].imageStatus
+                })
+            }
+            this.filteredProductDetails = this.productDetails      
         })
         .catch(err => console.log(err));
     },
@@ -71,9 +82,8 @@ export default {
                                 timer: 1500,
                             });
                         }, 500);
-                        
                         //Filter out the deleted product from the view
-                        this.filteredProductList = this.filteredProductList.filter( product => product.id !== id);
+                        this.filteredProductDetails = this.filteredProductDetails.filter( product => product.id !== id);
                     }
                     else{
                         Swal.fire({
@@ -92,12 +102,13 @@ export default {
         },
         filterProductList(filterOnValue){
             if(filterOnValue == ''){
-                this.filteredProductList = this.productList
+                this.filteredProductDetails = this.productDetails
             }
             else{
-                this.filteredProductList = this.productList.filter( product => { return (product.name.toLowerCase().includes(filterOnValue.toLowerCase()) ||
-                                                                                        product.fileName.toLowerCase().includes(filterOnValue.toLowerCase()))
-                                                                               });
+                this.filteredProductDetails = this.productDetails.filter( product => { 
+                    return (product.title.toLowerCase().includes(filterOnValue.toLowerCase()) ||
+                            product.subtitle.toLowerCase().includes(filterOnValue.toLowerCase()))
+                    });
             }
         }
     }

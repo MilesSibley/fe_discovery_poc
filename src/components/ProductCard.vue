@@ -2,12 +2,12 @@
     <v-card class="mx-auto" max-width="344" min-width="250">
         <v-img v-bind:src="product.image" height="200px"></v-img>
         <v-card-title>
-            <v-icon class="active status-icon" v-if="product.imageStatus == 'Active'">{{ "mdi-check" }}</v-icon>
-            <v-icon class="inactive status-icon" v-if="product.imageStatus == 'Inactive'">{{ "mdi-close-box-outline"}}</v-icon>
-            {{ product.name }}
+            <v-icon class="active status-icon" v-if="product.status == 'Active'">{{ "mdi-check" }}</v-icon>
+            <v-icon class="inactive status-icon" v-if="product.status == 'Inactive'">{{ "mdi-close-box-outline"}}</v-icon>
+            {{ product.title }}
         </v-card-title>
         <v-card-subtitle>
-            {{ product.fileName }}
+            {{ product.subtitle }}
         </v-card-subtitle>
         <v-card-actions>
             <v-btn text> View Details </v-btn>
@@ -27,7 +27,7 @@
             <div v-show="show">
                 <v-divider></v-divider>
                 <v-card-text>
-                    {{product.legendTitle}}
+                    {{product.details}}
                 </v-card-text>
             </div>
         </v-expand-transition>

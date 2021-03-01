@@ -7,9 +7,12 @@
                     <h1 >Bio-Techne Image Uploader POC</h1>
                 </v-col>
                 <v-col cols="2">
-                    <SearchBar v-on:search-typeahead="buildSearchValue" v-on:search-onchange="findImages"/>
+                    <SearchBar v-on:search-typeahead="buildSearchValue"/>
                 </v-col>
-                <v-col cols="3">
+                <v-col cols="1">
+                    <v-btn @click="findImages" elevation="2"> Search</v-btn>
+                </v-col>
+                <v-col cols="2">
                     <v-btn v-if="productDetails.length > 0" icon @click="$router.push('Form')">
                         <v-icon large>{{ "mdi-plus" }}</v-icon>
                     </v-btn>
@@ -69,12 +72,16 @@ export default {
             axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${this.productSearchValue}`)
             .then(res => {
                 this.productImagesList = res.data
-                this.productDetails = res.data
                 for (var i = 0; i < this.productImagesList.length; i++) {
-                    this.productDetails[i].id  = this.productImagesList[i].$id
-                    this.productDetails[i].image  = this.productImagesList[i].fileLocation
-                    this.productDetails[i].name  = this.productImagesList[i].productCode + " - Image " +  this.productImagesList[i].imageOrder
-                }            
+                    this.productDetails.push({
+                        id: this.productImagesList[i].$id,
+                        image: this.productImagesList[i].fileLocation,
+                        title: this.productImagesList[i].productCode + " - Image " +  this.productImagesList[i].imageOrder,
+                        subtitle: this.productImagesList[i].fileName,
+                        details: this.productImagesList[i].legendTitle,
+                        status: this.productImagesList[i].imageStatus
+                    })
+                }           
             })
             .catch(err => console.log(err));
         }
