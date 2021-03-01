@@ -7,7 +7,7 @@
                 <h1 >Original POC</h1>
             </v-col>
             <v-col cols="2">
-                <SearchBar v-on:search="filterProductList"/>
+                <SearchBar v-on:search-typeahead="filterProductList"/>
             </v-col>
             <v-col cols="1">
                 <v-btn icon @click="$router.push('Form')">

@@ -7,7 +7,7 @@
                     <h1 >Bio-Techne Image Uploader POC</h1>
                 </v-col>
                 <v-col cols="2">
-                    <SearchBar v-on:search="buildSearchValue" v-on:change="findImages"/>
+                    <SearchBar v-on:search-typeahead="buildSearchValue" v-on:search-onchange="findImages"/>
                 </v-col>
                 <v-col cols="3">
                     <v-btn v-if="productDetails.length > 0" icon @click="$router.push('Form')">
