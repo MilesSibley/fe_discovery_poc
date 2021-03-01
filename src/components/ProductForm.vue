@@ -67,7 +67,7 @@
                 @click="$router.push('POC')"
               />
             </div>
-            <!-- <pre class="code" v-text="formValues" /> -->
+            <pre class="code" v-text="formValues" />
           </FormulateForm>
         </v-col>
         <v-spacer></v-spacer>
@@ -76,8 +76,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   data() {
     return {
@@ -95,37 +93,13 @@ export default {
     if(this.formValues != null ){
       this.editMode = true;      
       this.imageSrc= this.formValues.image
-    }
-
-
-
-    //Call the API to get values for the Application dropdown
-    axios
-      .get(
-        "https://my-json-server.typicode.com/MilesSibley/JSON-Server/application"
-      )
-      .then((response) => {
-        var data = response.data;
-        for (var i = 0; i < data.length; i++) {
-          this.applications.push(data[i].name);
-        }
-      })
-      .catch((err) => console.log(err));
-
-    //Call the API to get values for the Type dropdown
-    axios
-      .get("https://my-json-server.typicode.com/MilesSibley/JSON-Server/type")
-      .then((response) => {
-        var data = response.data;
-        for (var i = 0; i < data.length; i++) {
-          this.types.push(data[i].name);
-        }
-      })
-      .catch((err) => console.log(err));
+    }    
   },
   methods: {
     createOrUpdate() {
       if (this.formValues.id == null) {
+
+        this.formValues.image = this.imageSrc
         this.$emit("create-product", this.formValues);
       } else {
         this.$emit("update-product", this.formValues);

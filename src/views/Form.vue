@@ -3,6 +3,8 @@
     <h1 class="page-title">Create New Product</h1>
     <ProductForm
       v-bind:product="product"
+      v-bind:applications="applications"
+      v-bind:types="types"
       v-on:create-product="createProduct"
       v-on:update-product="updateProduct"
     />
@@ -18,6 +20,37 @@ export default {
   name: "Edit",
   components: {
     ProductForm,
+  },
+  data(){
+    return{
+      applications: [],
+      types: []
+    }    
+  },
+  created() {
+    //Call the API to get values for the Application dropdown
+    axios
+      .get(
+        "https://my-json-server.typicode.com/MilesSibley/JSON-Server/application"
+      )
+      .then((response) => {
+        var data = response.data;
+        for (var i = 0; i < data.length; i++) {
+          this.applications.push(data[i].name);
+        }
+      })
+      .catch((err) => console.log(err));
+
+    //Call the API to get values for the Type dropdown
+    axios
+      .get("https://my-json-server.typicode.com/MilesSibley/JSON-Server/type")
+      .then((response) => {
+        var data = response.data;
+        for (var i = 0; i < data.length; i++) {
+          this.types.push(data[i].name);
+        }
+      })
+      .catch((err) => console.log(err));
   },
   methods: {
     createProduct(formValues) {

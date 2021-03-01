@@ -46,7 +46,8 @@ export default {
         return{
             productList:[],
             productDetails:[],
-            filteredProductDetails:[]
+            filteredProductDetails:[],
+            selectedProduct:[]
         }      
     },
     created(){
@@ -98,7 +99,8 @@ export default {
                 .catch(err => console.log(err));
         },
         editProduct(product){
-            this.$router.push({name: 'Form', params: {product:product}})   
+            this.selectedProduct = this.productList[product.id]
+            this.$router.push({name: 'Form', params: {product:this.selectedProduct}})   
         },
         filterProductList(filterOnValue){
             if(filterOnValue == ''){
