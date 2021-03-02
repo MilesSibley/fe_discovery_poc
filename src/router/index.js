@@ -35,6 +35,12 @@ const routes = [
     props: true
   },
   {
+    path: '/IU-Form',
+    name: 'IU-Form',
+    component: () => import('../views/IU-Form.vue'),
+    props: true
+  },
+  {
     path: '/ImageUploader',
     name: 'ImageUploader',
     component: () => import('../views/ImageUploader.vue'),

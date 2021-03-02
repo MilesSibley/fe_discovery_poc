@@ -1,6 +1,6 @@
 <template>
   <div class="edit">
-    <h1 class="page-title">Create New Product</h1>
+    <h1 class="page-title">Create and Edit Products</h1>
     <ProductForm
       v-bind:product="product"
       v-bind:applications="applications"

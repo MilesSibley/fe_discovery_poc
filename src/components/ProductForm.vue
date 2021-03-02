@@ -64,10 +64,10 @@
               <FormulateInput
                 type="button"
                 label="Cancel"
-                @click="$router.push('POC')"
+                @click="$router.go(-1)"
               />
             </div>
-            <pre class="code" v-text="formValues" />
+            <!-- <pre class="code" v-text="formValues" /> -->
           </FormulateForm>
         </v-col>
         <v-spacer></v-spacer>
@@ -80,26 +80,24 @@ export default {
   data() {
     return {
       formValues: {},
-      applications: [],
-      types: [],
       editMode: false,
       imageSrc: '',
+      imageFile:''
     };
   },
   created() {
     //Set the formvalues to the props that were passed in
     this.formValues = this.product;
     
-    if(this.formValues != null ){
+    if("imageSrc" in this.formValues){
       this.editMode = true;      
-      this.imageSrc= this.formValues.image
+      this.imageSrc= this.formValues.imageSrc
     }    
   },
   methods: {
     createOrUpdate() {
       if (this.formValues.id == null) {
-
-        this.formValues.image = this.imageSrc
+        this.formValues.imageFile = this.imageFile
         this.$emit("create-product", this.formValues);
       } else {
         this.$emit("update-product", this.formValues);
@@ -107,9 +105,10 @@ export default {
     },
     setProductImage(payload){
      this.imageSrc = payload.__ob__.value.previewData
+     this.imageFile = payload.__ob__.value.file
     }
   },
-  props: ["product"],
+  props: ["product","applications","types"],
 };
 </script>
 

@@ -13,7 +13,7 @@
                     <v-btn @click="findImages" elevation="2"> Search</v-btn>
                 </v-col>
                 <v-col cols="2">
-                    <v-btn v-if="productDetails.length > 0" icon @click="$router.push('Form')">
+                    <v-btn v-if="productCode != 0" icon @click="createProduct">
                         <v-icon large>{{ "mdi-plus" }}</v-icon>
                     </v-btn>
                 
@@ -22,11 +22,13 @@
         <v-row>
             <v-col cols="1"/>
             <v-col cols="10">
+                <keep-alive>
                 <Products
-                    v-bind:products="productDetails"
+                    v-bind:products="productCardDetails"
                     v-on:del-product="deleteProduct"
                     v-on:edit-product="editProduct"
                 />
+                </keep-alive>
             </v-col>
             <v-col cols="1"/>
         </v-row>
@@ -49,8 +51,10 @@ export default {
     data(){
         return{
             productImagesList:[],
-            productDetails:[],
-            productSearchValue: ''            
+            productCardDetails:[],
+            selectedProduct:{},
+            productSearchValue: '',
+            productCode: 'MAB0033'            
 
         }      
     },
@@ -58,22 +62,41 @@ export default {
         
     },
      methods: {
+        createProduct(){
+            this.selectedProduct = {
+                productCode: this.productCode
+            }
+            this.$router.push({name: 'IU-Form', params: {product:this.selectedProduct}})   
+        },
         deleteProduct(id){
             //Filter out the deleted product from the view
-            this.productDetails = this.productDetails.filter( product => product.id !== id);
+            this.productCardDetails = this.productCardDetails.filter( product => product.id !== id);
         },
         editProduct(product){
-            this.$router.push({name: 'Form', params: {product:product}})   
+            var productImagesEntry = this.productImagesList.filter(entry => entry.$id == product.id )
+            
+            //Set up the product props to setnd to the IU-Form
+            this.selectedProduct = {
+                image: productImagesEntry[0].fileLocation,
+                name: productImagesEntry[0].fileName,
+                application: productImagesEntry[0].applicationName,
+                type: productImagesEntry[0].imageType,
+                legendTitle: productImagesEntry[0].legendTitle,
+                imageStatus: productImagesEntry[0].imageStatus
+            }
+            
+            this.$router.push({name: 'IU-Form', params: {product:this.selectedProduct}})   
         },
         buildSearchValue(searchValue){
             this.productSearchValue = searchValue
         },
         findImages(){
-            axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${this.productSearchValue}`)
+            this.productCode = this.productSearchValue
+            axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${this.productCode}`)
             .then(res => {
                 this.productImagesList = res.data
                 for (var i = 0; i < this.productImagesList.length; i++) {
-                    this.productDetails.push({
+                    this.productCardDetails.push({
                         id: this.productImagesList[i].$id,
                         image: this.productImagesList[i].fileLocation,
                         title: this.productImagesList[i].productCode + " - Image " +  this.productImagesList[i].imageOrder,
