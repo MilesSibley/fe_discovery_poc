@@ -72,8 +72,6 @@ export default {
                 timer: 1500,
               });
             }, 500);
-
-            this.$router.push(-1);
           } else {
             Swal.fire({
               position: "top-end",
@@ -86,6 +84,9 @@ export default {
           }
         })
         .catch((err) => console.log(err));
+
+        this.$router.go(-1);
+
     },
     updateProduct(formValues) {
       console.log('Update a product.' + formValues)

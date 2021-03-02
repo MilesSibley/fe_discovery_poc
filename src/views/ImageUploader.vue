@@ -25,7 +25,7 @@
                 <keep-alive>
                 <Products
                     v-bind:products="productCardDetails"
-                    v-on:del-product="deleteProduct"
+                    v-on:del-product="deleteProductImage"
                     v-on:edit-product="editProduct"
                 />
                 </keep-alive>
@@ -40,7 +40,7 @@
 import axios from 'axios';
 import Products from '../components/Products.vue'
 import SearchBar from '../components/SearchBar.vue'
-// import Swal from "sweetalert2";
+import Swal from "sweetalert2";
 
 export default {
     name: 'ProductImages',
@@ -54,7 +54,7 @@ export default {
             productCardDetails:[],
             selectedProduct:{},
             productSearchValue: '',
-            productCode: 'MAB0033'            
+            productCode: ''            
 
         }      
     },
@@ -68,9 +68,38 @@ export default {
             }
             this.$router.push({name: 'IU-Form', params: {product:this.selectedProduct}})   
         },
-        deleteProduct(id){
-            //Filter out the deleted product from the view
-            this.productCardDetails = this.productCardDetails.filter( product => product.id !== id);
+        deleteProductImage(id){
+            this.selectedProduct = this.productImagesList.filter(entry => entry.$id == id )
+            console.log(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?id=${this.selectedProduct[0].imageGuid}`)
+            axios.delete(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?id=${this.selectedProduct[0].imageGuid}`)
+                .then((res) => { 
+                    if(res.status == 200){
+                        setTimeout(function () {
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                width: 400,
+                                title: "Prodcut successfully deleted. Response code: " + res.status,
+                                showConfirmButton: false,
+                                timer: 1500,
+                            });
+                        }, 500);
+                        
+                    }
+                    else{
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Something went wrong... Response code: " + res.status,
+                            showConfirmButton: false,
+                            timer: 1500,
+                        });
+                    }                    
+                })
+                .catch(err => console.log(err));
+
+                //Filter out the deleted product from the view
+                this.productCardDetails = this.productCardDetails.filter( product => product.id !== id);
         },
         editProduct(product){
             var productImagesEntry = this.productImagesList.filter(entry => entry.$id == product.id )
@@ -92,6 +121,7 @@ export default {
         },
         findImages(){
             this.productCode = this.productSearchValue
+            this.productCardDetails = [],
             axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${this.productCode}`)
             .then(res => {
                 this.productImagesList = res.data
