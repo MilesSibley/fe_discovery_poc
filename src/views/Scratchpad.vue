@@ -1,13 +1,12 @@
 <template>
-  <keep-alive>
-    <ScratchPadComponent/>
-  </keep-alive>
+  <VueSimpleSpinner/>
 </template>
 
 <script>
-import ScratchPadComponent from '../components/ScratchPadComponent.vue'
+import VueSimpleSpinner from '@/components/animations/VueSimpleSpinner.vue'
+
 export default {
-  components: { ScratchPadComponent },
+  components: { VueSimpleSpinner },
   data() {
     return {
       title: 'ScratchPad',
@@ -19,3 +18,6 @@ export default {
   },
 };
 </script>
+<style scoped>
+
+</style>

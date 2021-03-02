@@ -39,17 +39,19 @@
 
 <script>
 import axios from 'axios';
-import ProductDetails from '../components/Products.vue'
+import ProductDetails from '@/components/Products.vue'
 import UpsertForm from "@/components/ProductForm.vue";
-import SearchBar from '../components/SearchBar.vue'
+import SearchBar from '@/components/SearchBar.vue'
 import Swal from "sweetalert2";
+import VueSimpleSpinner from '@/components/animations/VueSimpleSpinner.vue'
 
 export default {
     name: 'ProductImages',
     components:{
         ProductDetails,
         UpsertForm,
-        SearchBar
+        SearchBar,
+        VueSimpleSpinner
     },
     data(){
         return{
@@ -150,6 +152,7 @@ export default {
         retrieveProductImages(){
             this.productCode = this.productSearchValue
             this.productCardDetails = [],
+            this.currentComponent = 'VueSimpleSpinner'
             axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${this.productCode}`)
             .then(res => {
                 this.productImagesList = res.data
@@ -164,7 +167,8 @@ export default {
                         details: this.productImagesList[i].legendTitle,
                         status: this.productImagesList[i].imageStatus
                     })
-                }           
+                }
+                this.currentComponent = 'ProductDetails'      
             })
             .catch(err => console.log(err));
         },
