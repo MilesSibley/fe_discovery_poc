@@ -1,4 +1,45 @@
 <template>
+<!-- Input/Output Notes
+  Input - This props takes in an object with the following properties:
+            product = {
+                  application: string
+                  name: string
+                  id: int
+                  imageSrc: string
+                  imageStatus: string
+                  legendTitle: string
+                  type: string
+                }
+                or
+                {
+                  productCode: string
+                }
+            applications = [id:value, id: value, id:value...]
+            types = [id:value, id: value, id:value...]
+
+  Output - Clicking Cancel will emit 'cancel-productForm'
+          Clicking Submit will emit either 'create-product', 'update-product' as well as the following payload
+            create-product -  { 
+                                application:
+                                imageFile:
+                                imageStatus:
+                                legendTItle:
+                                name:
+                                productCode:
+                                type:
+                              }
+                              
+            update-product -  { 
+                                application:
+                                id:
+                                imageSrc:
+                                imageStatus:
+                                legendTItle:
+                                name:
+                                type:
+                              }
+            
+  --> 
   <v-container>
       <v-row>
         <v-spacer></v-spacer>
@@ -61,11 +102,7 @@
             />
             <div class="double-wide">
               <FormulateInput type="submit" label="Submit" @click="createOrUpdate" />
-              <FormulateInput
-                type="button"
-                label="Cancel"
-                @click="$router.go(-1)"
-              />
+              <FormulateInput type="button" label="Cancel" @click="$emit('cancel-productForm')" />
             </div>
             <!-- <pre class="code" v-text="formValues" /> -->
           </FormulateForm>

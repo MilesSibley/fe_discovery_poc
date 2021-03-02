@@ -10,67 +10,213 @@
                     <SearchBar v-on:search-typeahead="buildSearchValue"/>
                 </v-col>
                 <v-col cols="1">
-                    <v-btn @click="findImages" elevation="2"> Search</v-btn>
+                    <v-btn @click="retrieveProductImages" elevation="2"> Search</v-btn>
                 </v-col>
                 <v-col cols="2">
-                    <v-btn v-if="productCode != 0" icon @click="createProduct">
+                    <v-btn v-if="productCode != 0" icon @click="launchUpsert_Create">
                         <v-icon large>{{ "mdi-plus" }}</v-icon>
                     </v-btn>
                 
                 </v-col>
             </v-row>
-        <v-row>
-            <v-col cols="1"/>
-            <v-col cols="10">
-                <keep-alive>
-                <Products
-                    v-bind:products="productCardDetails"
-                    v-on:del-product="deleteProductImage"
-                    v-on:edit-product="editProduct"
-                />
-                </keep-alive>
-            </v-col>
-            <v-col cols="1"/>
-        </v-row>
+            <v-row>
+                <v-col cols="1"/>
+                <v-col cols="10">
+                    <component :is="currentComponent" 
+                        v-bind="currentProperties"
+                        v-on:cancel-productForm="cancelUpsert"
+                        v-on:create-product="createProductImage"
+                        v-on:edit-product="launchUpsert_Update"
+                        v-on:update-product="updateProductImage"
+                        v-on:del-product="deleteProductImage"
+                    ></component>
+                </v-col>
+                <v-col cols="1"/>
+            </v-row>
         </v-container>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-import Products from '../components/Products.vue'
+import ProductDetails from '../components/Products.vue'
+import UpsertForm from "@/components/ProductForm.vue";
 import SearchBar from '../components/SearchBar.vue'
 import Swal from "sweetalert2";
 
 export default {
     name: 'ProductImages',
     components:{
-        Products,
+        ProductDetails,
+        UpsertForm,
         SearchBar
     },
     data(){
         return{
+            //The list of all product images currently displaying
             productImagesList:[],
+            
+            //Props being passed to the Products component
             productCardDetails:[],
+            
+            //Props being sent to the ProductForm component
+            productCode: '',
             selectedProduct:{},
+            
+            //The search criteria being emitted from the search bar
             productSearchValue: '',
-            productCode: ''            
-
+            
+            //Default component that should display
+            currentComponent: 'ProductDetails'
         }      
     },
-    created(){
-        
-    },
-     methods: {
-        createProduct(){
-            this.selectedProduct = {
-                productCode: this.productCode
+    computed: {
+        currentProperties: function() {
+            if (this.currentComponent === 'ProductDetails') {
+                return { 
+                    products: this.productCardDetails 
+                }
             }
-            this.$router.push({name: 'IU-Form', params: {product:this.selectedProduct}})   
+            else if(this.currentComponent === 'UpsertForm') 
+            {
+                return { 
+                    product: this.selectedProduct,
+                    applications: ["Flow Cytometry","N/A","Western Blot"], 
+                    types: ["Data","Linearity"]
+                }
+            }
+            
+
+            else
+                return {}
+        }
+    },   
+    methods: {
+        //CRUD functionality
+        createProductImage(formValues){
+             
+            //Set required values for the baseImage sent along with the API call
+            var baseImage = {}
+            baseImage.applicationName = formValues.application
+            baseImage.fileName = formValues.name
+            baseImage.imageAltText = "Image alt text for " + formValues.name
+            baseImage.imageOrder = 1
+            baseImage.imageStatus = formValues.imageStatus
+            baseImage.imageType = formValues.type
+            baseImage.legend = formValues.application
+            baseImage.legendTitle = formValues.legendTitle
+            baseImage.productCode = formValues.productCode
+            var encodedBaseImage = encodeURI(JSON.stringify(baseImage))
+            
+            //Setup the form data to send the image within the API call
+            var formData = new FormData();
+            formData.append("imagefile", formValues.imageFile);
+        
+            
+            //Make the API call
+            axios.post("https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?productType=Antibody&baseImage=" + encodedBaseImage,
+            formData, {
+                headers: {
+                'Content-Type': 'multipart/form-data'
+                }
+            })
+            .then((res) => {
+                if (res.status == 200) {
+                    this.retrieveProductImages()
+                    this.currentComponent = 'ProductDetails'
+                    setTimeout(function () {
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        width: 400,
+                        title: "Prodcut successfully created. Response code: " + res.status,
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+                    }, 500);
+                } else {
+                    Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "Something went wrong... Response code: " + res.status,
+                    showConfirmButton: true,
+                    //timer: 1500,
+                    width: 400,
+                    });
+                }
+            })
+            .catch((err) => console.log(err));
+        },
+        retrieveProductImages(){
+            this.productCode = this.productSearchValue
+            this.productCardDetails = [],
+            axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${this.productCode}`)
+            .then(res => {
+                this.productImagesList = res.data
+                for (var i = 0; i < this.productImagesList.length; i++) {
+                    
+                    //From the results returned, build up the props that will be passed to the ProductDetails component
+                    this.productCardDetails.push({
+                        id: this.productImagesList[i].$id,
+                        image: this.productImagesList[i].fileLocation,
+                        title: this.productImagesList[i].productCode + " - Image " +  this.productImagesList[i].imageOrder,
+                        subtitle: this.productImagesList[i].fileName,
+                        details: this.productImagesList[i].legendTitle,
+                        status: this.productImagesList[i].imageStatus
+                    })
+                }           
+            })
+            .catch(err => console.log(err));
+        },
+        updateProductImage(formValues){
+            
+            //Set required values for the baseImage sent along with the API call
+            var baseImage = {}
+            baseImage.applicationName = formValues.application
+            baseImage.fileName = formValues.name
+            baseImage.fileLocation = formValues.imageSrc
+            baseImage.imageAltText = formValues.imageAltText
+            baseImage.imageGuid = formValues.imageGuid
+            baseImage.imageOrder = formValues.imageOrder
+            baseImage.legend = formValues.application
+            baseImage.productCode = formValues.productCode
+            baseImage.legendTitle = formValues.legendTitle
+            baseImage.imageStatus = formValues.imageStatus
+            baseImage.imageType = formValues.type
+            var encodedBaseImage = encodeURI(JSON.stringify(baseImage))
+
+            axios.post("https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?productType=Antibody&baseImage=" + encodedBaseImage)
+            .then((res) => {
+                if (res.status == 200) {
+                    this.retrieveProductImages()
+                    this.currentComponent = 'ProductDetails'
+                    setTimeout(function () {
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        width: 400,
+                        title: "Prodcut successfully created. Response code: " + res.status,
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+                    }, 500);
+                } else {
+                    Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "Something went wrong... Response code: " + res.status,
+                    showConfirmButton: true,
+                    //timer: 1500,
+                    width: 400,
+                    });
+                }
+            })
+            .catch(err => console.log(err));
+            
+
         },
         deleteProductImage(id){
             this.selectedProduct = this.productImagesList.filter(entry => entry.$id == id )
-            console.log(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?id=${this.selectedProduct[0].imageGuid}`)
             axios.delete(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?id=${this.selectedProduct[0].imageGuid}`)
                 .then((res) => { 
                     if(res.status == 200){
@@ -101,42 +247,46 @@ export default {
                 //Filter out the deleted product from the view
                 this.productCardDetails = this.productCardDetails.filter( product => product.id !== id);
         },
-        editProduct(product){
-            var productImagesEntry = this.productImagesList.filter(entry => entry.$id == product.id )
-            
-            //Set up the product props to setnd to the IU-Form
-            this.selectedProduct = {
-                image: productImagesEntry[0].fileLocation,
-                name: productImagesEntry[0].fileName,
-                application: productImagesEntry[0].applicationName,
-                type: productImagesEntry[0].imageType,
-                legendTitle: productImagesEntry[0].legendTitle,
-                imageStatus: productImagesEntry[0].imageStatus
-            }
-            
-            this.$router.push({name: 'IU-Form', params: {product:this.selectedProduct}})   
-        },
+        //Search Functionality
         buildSearchValue(searchValue){
             this.productSearchValue = searchValue
         },
-        findImages(){
-            this.productCode = this.productSearchValue
-            this.productCardDetails = [],
-            axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${this.productCode}`)
-            .then(res => {
-                this.productImagesList = res.data
-                for (var i = 0; i < this.productImagesList.length; i++) {
-                    this.productCardDetails.push({
-                        id: this.productImagesList[i].$id,
-                        image: this.productImagesList[i].fileLocation,
-                        title: this.productImagesList[i].productCode + " - Image " +  this.productImagesList[i].imageOrder,
-                        subtitle: this.productImagesList[i].fileName,
-                        details: this.productImagesList[i].legendTitle,
-                        status: this.productImagesList[i].imageStatus
-                    })
-                }           
-            })
-            .catch(err => console.log(err));
+        //Switching Dynamic Components
+        launchUpsert_Create()
+        {
+            this.selectedProduct = {
+                productCode: this.productCode
+            }
+
+            this.currentComponent = 'UpsertForm'
+        },
+        launchUpsert_Update(product)
+        {
+            //Find the selected productImage in the list of all productImages
+            var productImage = this.productImagesList.filter(entry => entry.$id == product.id )
+            
+            //Set up the product props to send to the Product Form component
+            this.selectedProduct = {
+                application: productImage[0].applicationName,
+                id:productImage[0].$id,
+                imageAltText:productImage[0].imageAltText,
+                imageGuid:productImage[0].imageGuid,
+                imageOrder:productImage[0].imageOrder,
+                imageSrc: productImage[0].fileLocation,
+                imageStatus: productImage[0].imageStatus,
+                legend:productImage[0].legend,
+                legendTitle: productImage[0].legendTitle,
+                name: productImage[0].fileName,
+                productCode: productImage[0].productCode,
+                type: productImage[0].imageType,
+                WebfileLocation: productImage[0].WebfileLocation,
+            }
+            
+            this.currentComponent = 'UpsertForm'
+
+        },
+        cancelUpsert(){
+            this.currentComponent = 'ProductDetails'
         }
      }
 }
