@@ -34,6 +34,7 @@
                 <v-col cols="1"/>
             </v-row>
         </v-container>
+        <Alert ref="alert"/>
     </div>
 </template>
 
@@ -42,12 +43,13 @@ import axios from 'axios';
 import ProductDetails from '@/components/Products.vue'
 import UpsertForm from "@/components/ProductForm.vue";
 import SearchBar from '@/components/SearchBar.vue'
-import Swal from "sweetalert2";
+import Alert from "@/components/layout/Alert.vue";
 import VueSimpleSpinner from '@/components/animations/VueSimpleSpinner.vue'
 
 export default {
     name: 'ProductImages',
     components:{
+        Alert,
         ProductDetails,
         UpsertForm,
         SearchBar,
@@ -123,26 +125,10 @@ export default {
             .then((res) => {
                 if (res.status == 200) {
                     this.retrieveProductImages()
+                    this.$refs.alert.displayResult("success","Product Created", "Response code: " + res.status)
                     this.currentComponent = 'ProductDetails'
-                    setTimeout(function () {
-                    Swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        width: 400,
-                        title: "Prodcut successfully created. Response code: " + res.status,
-                        showConfirmButton: false,
-                        timer: 1500,
-                    });
-                    }, 500);
                 } else {
-                    Swal.fire({
-                    position: "top-end",
-                    icon: "error",
-                    title: "Something went wrong... Response code: " + res.status,
-                    showConfirmButton: true,
-                    //timer: 1500,
-                    width: 400,
-                    });
+                    this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
                 }
             })
             .catch((err) => console.log(err));
@@ -191,26 +177,10 @@ export default {
             .then((res) => {
                 if (res.status == 200) {
                     this.retrieveProductImages()
+                    this.$refs.alert.displayResult("success","Product Updated", "Response code: " + res.status)
                     this.currentComponent = 'ProductDetails'
-                    setTimeout(function () {
-                    Swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        width: 400,
-                        title: "Prodcut successfully created. Response code: " + res.status,
-                        showConfirmButton: false,
-                        timer: 1500,
-                    });
-                    }, 500);
                 } else {
-                    Swal.fire({
-                    position: "top-end",
-                    icon: "error",
-                    title: "Something went wrong... Response code: " + res.status,
-                    showConfirmButton: true,
-                    //timer: 1500,
-                    width: 400,
-                    });
+                    this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
                 }
             })
             .catch(err => console.log(err));
@@ -220,26 +190,10 @@ export default {
             axios.delete(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?id=${this.selectedProduct[0].imageGuid}`)
                 .then((res) => { 
                     if(res.status == 200){
-                        setTimeout(function () {
-                            Swal.fire({
-                                position: "top-end",
-                                icon: "success",
-                                width: 400,
-                                title: "Prodcut successfully deleted. Response code: " + res.status,
-                                showConfirmButton: false,
-                                timer: 1500,
-                            });
-                        }, 500);
-                        
+                        this.$refs.alert.displayResult("success","Product Deleted", "Response code: " + res.status)
                     }
                     else{
-                        Swal.fire({
-                            position: "top-end",
-                            icon: "error",
-                            title: "Something went wrong... Response code: " + res.status,
-                            showConfirmButton: false,
-                            timer: 1500,
-                        });
+                        this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
                     }                    
                 })
                 .catch(err => console.log(err));

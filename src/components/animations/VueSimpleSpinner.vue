@@ -1,5 +1,5 @@
 <template>
-   <vue-simple-spinner size="massive" message="Loading..."></vue-simple-spinner>
+   <vue-simple-spinner size="massive" message="Working..."></vue-simple-spinner>
 </template>
 <script>
 import VueSimpleSpinner from 'vue-simple-spinner'

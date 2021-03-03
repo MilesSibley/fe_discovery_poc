@@ -30,6 +30,7 @@
         <v-col cols="1"/>
       </v-row>
     </v-container>
+    <Alert ref="alert"/>
   </div>
 </template>
 
@@ -38,12 +39,13 @@ import axios from 'axios';
 import ProductDetails from '@/components/Products.vue'
 import UpsertForm from "@/components/ProductForm.vue";
 import SearchBar from '@/components/SearchBar.vue'
-import Swal from "sweetalert2";
+import Alert from "@/components/layout/Alert.vue";
 import VueSimpleSpinner from '@/components/animations/VueSimpleSpinner.vue'
 
 export default {
     name: 'POC',
     components:{
+        Alert,
         ProductDetails,
         UpsertForm,
         SearchBar,
@@ -57,7 +59,7 @@ export default {
             selectedProduct:{},
             applications: [],
             types: [],
-
+                        
             //Default component that should display
             currentComponent: 'ProductDetails'
         }      
@@ -110,34 +112,19 @@ export default {
     methods: {
         //CRUD functionality
         createProduct(formValues){
+            this.currentComponent = 'VueSimpleSpinner'
             axios.post(
             "https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/",
             formValues
             )
             .then((res) => {
-            if (res.status == 201) {
-                this.currentComponent = 'ProductDetails'
-                setTimeout(function () {
-                Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    width: 400,
-                    title:
-                    "Prodcut successfully deleted. Response code: " + res.status,
-                    showConfirmButton: false,
-                    timer: 1500,
-                });
-                }, 500);
-            } else {
-                Swal.fire({
-                position: "top-end",
-                icon: "error",
-                title: "Something went wrong... Response code: " + res.status,
-                showConfirmButton: false,
-                timer: 1500,
-                width: 400,
-                });
-            }
+                if (res.status == 201) {
+                    this.$refs.alert.displayResult("success","Product Created", "Response code: " + res.status)
+                    this.currentComponent = 'ProductDetails'
+                } else {
+                    this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
+                    this.currentComponent = 'UpsertForm'
+                }
             })
             .catch((err) => console.log(err));
         },
@@ -163,63 +150,36 @@ export default {
             .catch(err => console.log(err));
         },
         updateProduct(formValues){
-            console.log("Update Product")
-            console.log(formValues)
-
+            this.currentComponent = 'VueSimpleSpinner'
             axios.put(
                 `https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/${formValues.id}`,
                 formValues
             )
             .then((res) => {
             if (res.status == 200) {
-                setTimeout(function () {
-                Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    width: 400,
-                    height: 200,
-                    title:
-                    "Prodcut successfully updated. Response code: " + res.status,
-                    showConfirmButton: false,
-                    timer: 1500,
-                });
-                }, 500);
+                this.$refs.alert.displayResult("success","Product Updated", "Response code: " + res.status)
                 this.currentComponent = 'ProductDetails'
             } else {
-                Swal.fire({
-                position: "top-end",
-                icon: "error",
-                title: "Something went wrong... Response code: " + res.status,
-                showConfirmButton: false,
-                timer: 1500,
-                });
+                this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
+                this.currentComponent = 'UpsertForm'
             }
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                console.log(err)
+            });
         },
         deleteProduct(id){
             axios.delete(`https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/${id}`)
                 .then((res) => { 
+                    console.log(res.status)
                     if(res.status == 200){
-                        Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            width: 400,
-                            title: "Prodcut successfully deleted. Response code: " + res.status,
-                            showConfirmButton: false,
-                            timer: 1500,
-                        });
+                        this.$refs.alert.displayResult("success","Product Deleted", "Response code: " + res.status)
+
                         //Filter out the deleted product from the view
                         this.filteredProductDetails = this.filteredProductDetails.filter( product => product.id !== id);
                     }
                     else{
-                        Swal.fire({
-                            position: "top-end",
-                            icon: "error",
-                            title: "Something went wrong... Response code: " + res.status,
-                            showConfirmButton: false,
-                            timer: 1500,
-                        });
+                        this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
                     }
                 })
                 .catch(err => console.log(err));
@@ -239,6 +199,7 @@ export default {
         //Switching Dynamic Components
         launchUpsert_Create()
         {
+            this.selectedProduct = {}
             this.currentComponent = 'UpsertForm'
         },
         launchUpsert_Update(product)
