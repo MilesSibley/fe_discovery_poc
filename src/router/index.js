@@ -29,12 +29,6 @@ const routes = [
     component: () => import('../views/Scratchpad.vue')
   },
   {
-    path: '/Form',
-    name: 'Form',
-    component: () => import('../views/Form.vue'),
-    props: true
-  },
-  {
     path: '/ImageUploader',
     name: 'ImageUploader',
     component: () => import('../views/ImageUploader.vue'),

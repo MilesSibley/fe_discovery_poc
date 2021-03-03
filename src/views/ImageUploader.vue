@@ -7,13 +7,13 @@
                     <h1 >Bio-Techne Image Uploader POC</h1>
                 </v-col>
                 <v-col cols="2">
-                    <SearchBar v-on:search-typeahead="buildSearchValue"/>
+                    <SearchBar v-if="currentComponent == 'ProductDetails'" v-on:search-typeahead="buildSearchValue"/>
                 </v-col>
                 <v-col cols="1">
-                    <v-btn @click="retrieveProductImages" elevation="2"> Search</v-btn>
+                    <v-btn v-if="currentComponent == 'ProductDetails'" @click="retrieveProductImages" elevation="2">Find Images</v-btn>
                 </v-col>
                 <v-col cols="2">
-                    <v-btn v-if="productCode != 0" icon @click="launchUpsert_Create">
+                    <v-btn v-if="currentComponent == 'ProductDetails' && productCode != 0" icon @click="launchUpsert_Create">
                         <v-icon large>{{ "mdi-plus" }}</v-icon>
                     </v-btn>
                 
@@ -29,7 +29,7 @@
                         v-on:edit-product="launchUpsert_Update"
                         v-on:update-product="updateProductImage"
                         v-on:del-product="deleteProductImage"
-                    ></component>
+                    />
                 </v-col>
                 <v-col cols="1"/>
             </v-row>
@@ -87,8 +87,6 @@ export default {
                     types: ["Data","Linearity"]
                 }
             }
-            
-
             else
                 return {}
         }
@@ -216,8 +214,6 @@ export default {
                 }
             })
             .catch(err => console.log(err));
-            
-
         },
         deleteProductImage(id){
             this.selectedProduct = this.productImagesList.filter(entry => entry.$id == id )
