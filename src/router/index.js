@@ -25,6 +25,12 @@ const routes = [
     name: 'ImageUploader',
     component: () => import('../views/ImageUploader.vue'),
     props: true
+  },
+  {
+    path: '/PerformanceTesting',
+    name: 'PerformanceTesting',
+    component: () => import('../views/PerformanceTesting.vue'),
+    props: true
   }
 ]
 

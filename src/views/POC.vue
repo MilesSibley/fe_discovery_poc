@@ -15,20 +15,20 @@
                 </v-btn>
             </v-col>
         </v-row>
-      <v-row>
-        <v-col cols="1"/>
-        <v-col cols="10">
-            <component :is="currentComponent" 
-                v-bind="currentProperties"
-                v-on:cancel-productForm="cancelUpsert"
-                v-on:create-product="createProduct"
-                v-on:edit-product="launchUpsert_Update"
-                v-on:update-product="updateProduct"
-                v-on:del-product="deleteProduct"
-                :key="componentKey" 
-            />
-        </v-col>
-        <v-col cols="1"/>
+        <v-row>
+            <v-col cols="1"/>
+            <v-col cols="10">
+                <component :is="currentComponent" 
+                    v-bind="currentProperties"
+                    v-on:cancel-productForm="cancelUpsert"
+                    v-on:create-product="createProduct"
+                    v-on:edit-product="launchUpsert_Update"
+                    v-on:update-product="updateProduct"
+                    v-on:del-product="deleteProduct"
+                    :key="componentKey" 
+                />
+            </v-col>
+            <v-col cols="1"/>
       </v-row>
     </v-container>
     <Alert ref="alert"/>
@@ -36,12 +36,12 @@
 </template>
 
 <script>
-import axios from 'axios';
-import ProductDetails from '@/components/ProductCardDisplay.vue'
-import UpsertForm from "@/components/UpsertForm.vue";
-import SearchBar from '@/components/SearchBar.vue'
 import Alert from "@/components/layout/Alert.vue";
-import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue'
+import axios from 'axios';
+import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue';
+import ProductDetails from '@/components/ProductCardDisplay.vue';
+import SearchBar from '@/components/SearchBar.vue';
+import UpsertForm from "@/components/UpsertForm.vue";
 
 export default {
     name: 'POC',
@@ -87,6 +87,7 @@ export default {
     },   
     created(){
         this.retrieveProducts()
+        
         //Call the API to get values for the Application dropdown
         axios
         .get(
@@ -102,7 +103,9 @@ export default {
 
         //Call the API to get values for the Type dropdown
         axios
-        .get("https://my-json-server.typicode.com/MilesSibley/JSON-Server/type")
+        .get(
+            "https://my-json-server.typicode.com/MilesSibley/JSON-Server/type"
+        )
         .then((response) => {
             var data = response.data;
             for (var i = 0; i < data.length; i++) {
