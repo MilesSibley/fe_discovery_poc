@@ -1,7 +1,6 @@
 <template>
 <span class="search-bar">
-    <!-- <input type="text" class="search-term" placeholder="Search" v-model="searchValue" v-on:input="$emit('search',searchValue)"> -->
-      <v-text-field hide-details prepend-icon="mdi-magnify" single-line placeholder="Search" v-model="searchValue" v-on:change="$emit('search-onchange')" v-on:input="$emit('search-typeahead',searchValue)">
+      <v-text-field hide-details prepend-icon="mdi-magnify" single-line placeholder="Search" v-model="searchValue" v-on:keyup.enter="$emit('search-onchange',searchValue)" v-on:input="$emit('search-typeahead',searchValue)">
       </v-text-field>
 </span>
 </template>

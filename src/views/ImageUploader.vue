@@ -7,7 +7,7 @@
                     <h1 >Bio-Techne Image Uploader POC</h1>
                 </v-col>
                 <v-col cols="2">
-                    <SearchBar v-if="currentComponent == 'ProductDetails'" v-on:search-typeahead="buildSearchValue"/>
+                    <SearchBar v-if="currentComponent == 'ProductDetails'" v-on:search-typeahead="buildSearchValue" v-on:search-onchange="retrieveProductImages"/>
                 </v-col>
                 <v-col cols="1">
                     <v-btn v-if="currentComponent == 'ProductDetails'" @click="retrieveProductImages" elevation="2">Find Images</v-btn>
@@ -41,8 +41,8 @@
 
 <script>
 import axios from 'axios';
-import ProductDetails from '@/components/Products.vue'
-import UpsertForm from "@/components/ProductForm.vue";
+import ProductDetails from '@/components/ProductCardDisplay.vue'
+import UpsertForm from "@/components/UpsertForm.vue";
 import SearchBar from '@/components/SearchBar.vue'
 import Alert from "@/components/layout/Alert.vue";
 import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue'

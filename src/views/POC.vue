@@ -37,8 +37,8 @@
 
 <script>
 import axios from 'axios';
-import ProductDetails from '@/components/Products.vue'
-import UpsertForm from "@/components/ProductForm.vue";
+import ProductDetails from '@/components/ProductCardDisplay.vue'
+import UpsertForm from "@/components/UpsertForm.vue";
 import SearchBar from '@/components/SearchBar.vue'
 import Alert from "@/components/layout/Alert.vue";
 import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue'
@@ -173,7 +173,6 @@ export default {
         deleteProduct(id){
             axios.delete(`https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/${id}`)
                 .then((res) => { 
-                    console.log(res.status)
                     if(res.status == 200){
                         this.$refs.alert.displayResult("success","Product Deleted", "Response code: " + res.status)
 
