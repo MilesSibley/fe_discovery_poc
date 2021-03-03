@@ -29,6 +29,7 @@
                         v-on:edit-product="launchUpsert_Update"
                         v-on:update-product="updateProductImage"
                         v-on:del-product="deleteProductImage"
+                        :key="componentKey" 
                     />
                 </v-col>
                 <v-col cols="1"/>
@@ -44,7 +45,7 @@ import ProductDetails from '@/components/Products.vue'
 import UpsertForm from "@/components/ProductForm.vue";
 import SearchBar from '@/components/SearchBar.vue'
 import Alert from "@/components/layout/Alert.vue";
-import VueSimpleSpinner from '@/components/animations/VueSimpleSpinner.vue'
+import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue'
 
 export default {
     name: 'ProductImages',
@@ -53,7 +54,7 @@ export default {
         ProductDetails,
         UpsertForm,
         SearchBar,
-        VueSimpleSpinner
+        LoadingAnimation
     },
     data(){
         return{
@@ -70,8 +71,9 @@ export default {
             //The search criteria being emitted from the search bar
             productSearchValue: '',
             
-            //Default component that should display
-            currentComponent: 'ProductDetails'
+            //Current component details
+            currentComponent: 'ProductDetails',
+            componentKey: 0
         }      
     },
     computed: {
@@ -91,12 +93,13 @@ export default {
             }
             else
                 return {}
-        }
+        },
     },   
     methods: {
         //CRUD functionality
         createProductImage(formValues){
-             
+            this.currentComponent = 'LoadingAnimation'
+
             //Set required values for the baseImage sent along with the API call
             var baseImage = {}
             baseImage.applicationName = formValues.application
@@ -126,9 +129,9 @@ export default {
                 if (res.status == 200) {
                     this.retrieveProductImages()
                     this.$refs.alert.displayResult("success","Product Created", "Response code: " + res.status)
-                    this.currentComponent = 'ProductDetails'
                 } else {
                     this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
+                    this.currentComponent = 'UpsertForm'
                 }
             })
             .catch((err) => console.log(err));
@@ -136,7 +139,7 @@ export default {
         retrieveProductImages(){
             this.productCode = this.productSearchValue
             this.productCardDetails = [],
-            this.currentComponent = 'VueSimpleSpinner'
+            this.currentComponent = 'LoadingAnimation'
             axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${this.productCode}`)
             .then(res => {
                 this.productImagesList = res.data
@@ -153,6 +156,7 @@ export default {
                     })
                 }
                 this.currentComponent = 'ProductDetails'      
+                this.refreshComponent()
             })
             .catch(err => console.log(err));
         },
@@ -178,15 +182,20 @@ export default {
                 if (res.status == 200) {
                     this.retrieveProductImages()
                     this.$refs.alert.displayResult("success","Product Updated", "Response code: " + res.status)
-                    this.currentComponent = 'ProductDetails'
                 } else {
                     this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
+                    this.currentComponent = 'UpsertForm'
                 }
             })
             .catch(err => console.log(err));
         },
         deleteProductImage(id){
             this.selectedProduct = this.productImagesList.filter(entry => entry.$id == id )
+
+            //Filter out the deleted product from the view
+            this.productCardDetails = this.productCardDetails.filter( product => product.id !== id);
+            this.refreshComponent()
+            
             axios.delete(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?id=${this.selectedProduct[0].imageGuid}`)
                 .then((res) => { 
                     if(res.status == 200){
@@ -197,15 +206,12 @@ export default {
                     }                    
                 })
                 .catch(err => console.log(err));
-
-                //Filter out the deleted product from the view
-                this.productCardDetails = this.productCardDetails.filter( product => product.id !== id);
         },
         //Search Functionality
         buildSearchValue(searchValue){
             this.productSearchValue = searchValue
         },
-        //Switching Dynamic Components
+        //Dynamic Components
         launchUpsert_Create()
         {
             this.selectedProduct = {
@@ -241,7 +247,11 @@ export default {
         },
         cancelUpsert(){
             this.currentComponent = 'ProductDetails'
+        },
+        refreshComponent() {
+            this.componentKey += 1;
         }
+   
      }
 }
 </script>

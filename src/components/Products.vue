@@ -34,7 +34,7 @@ export default {
       return{
         currentPage: 1,
         perPage: 8,
-        visibleProductCards: []
+        visibleProductCards: this.products
       }
     },
     beforeMount: function() {
@@ -42,6 +42,9 @@ export default {
     },
     methods: {
       updateVisibleProductCards(){
+        console.log(this.products)
+        console.log(this.currentPage)
+        console.log(this.perPage)
         this.visibleProductCards = this.products.slice((this.currentPage-1) * this.perPage, ((this.currentPage-1) * this.perPage) + this.perPage);
 
       },

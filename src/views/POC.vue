@@ -25,6 +25,7 @@
                 v-on:edit-product="launchUpsert_Update"
                 v-on:update-product="updateProduct"
                 v-on:del-product="deleteProduct"
+                :key="componentKey" 
             />
         </v-col>
         <v-col cols="1"/>
@@ -40,7 +41,7 @@ import ProductDetails from '@/components/Products.vue'
 import UpsertForm from "@/components/ProductForm.vue";
 import SearchBar from '@/components/SearchBar.vue'
 import Alert from "@/components/layout/Alert.vue";
-import VueSimpleSpinner from '@/components/animations/VueSimpleSpinner.vue'
+import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue'
 
 export default {
     name: 'POC',
@@ -49,7 +50,7 @@ export default {
         ProductDetails,
         UpsertForm,
         SearchBar,
-        VueSimpleSpinner
+        LoadingAnimation
     },
     data(){
         return{
@@ -60,8 +61,9 @@ export default {
             applications: [],
             types: [],
                         
-            //Default component that should display
-            currentComponent: 'ProductDetails'
+            //Current component details
+            currentComponent: 'ProductDetails',
+            componentKey: 0
         }      
     },
     computed: {
@@ -110,17 +112,17 @@ export default {
         .catch((err) => console.log(err));
     },
     methods: {
-        //CRUD functionality
+        //CRUD operations
         createProduct(formValues){
-            this.currentComponent = 'VueSimpleSpinner'
-            axios.post(
-            "https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/",
-            formValues
-            )
+            this.currentComponent = 'LoadingAnimation'
+            axios.post("https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/",formValues)
             .then((res) => {
                 if (res.status == 201) {
+                    //Show a success message, and display the ProductDetails component
                     this.$refs.alert.displayResult("success","Product Created", "Response code: " + res.status)
                     this.currentComponent = 'ProductDetails'
+                    this.refreshComponent()
+
                 } else {
                     this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
                     this.currentComponent = 'UpsertForm'
@@ -130,7 +132,7 @@ export default {
         },
         retrieveProducts()
         {
-            this.currentComponent = 'VueSimpleSpinner'
+            this.currentComponent = 'LoadingAnimation'
             axios.get('https://my-json-server.typicode.com/MilesSibley/JSON-Server/products')
             .then(res => {
                 this.productList = res.data 
@@ -150,7 +152,7 @@ export default {
             .catch(err => console.log(err));
         },
         updateProduct(formValues){
-            this.currentComponent = 'VueSimpleSpinner'
+            this.currentComponent = 'LoadingAnimation'
             axios.put(
                 `https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/${formValues.id}`,
                 formValues
@@ -177,6 +179,7 @@ export default {
 
                         //Filter out the deleted product from the view
                         this.filteredProductDetails = this.filteredProductDetails.filter( product => product.id !== id);
+                        this.refreshComponent();
                     }
                     else{
                         this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
@@ -184,7 +187,7 @@ export default {
                 })
                 .catch(err => console.log(err));
         },
-        //Filtering Functionality
+        //Filtering
         filterProductList(filterOnValue){
             if(filterOnValue == ''){
                 this.filteredProductDetails = this.productDetails
@@ -195,8 +198,9 @@ export default {
                             product.subtitle.toLowerCase().includes(filterOnValue.toLowerCase()))
                     });
             }
+            this.refreshComponent()
         },
-        //Switching Dynamic Components
+        //Dynamic Components
         launchUpsert_Create()
         {
             this.selectedProduct = {}
@@ -213,6 +217,9 @@ export default {
         },
         cancelUpsert(){
             this.currentComponent = 'ProductDetails'
+        },
+        refreshComponent() {
+            this.componentKey += 1;
         }
     }
 }
