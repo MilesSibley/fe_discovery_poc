@@ -9,6 +9,7 @@
           <v-spacer></v-spacer>
           <v-col cols="12" sm="3">
              <v-pagination
+                  v-if="Math.ceil(this.products.length / this.perPage) > 1"
                   v-model="currentPage"
                   color="#1161A0"
                   :length="Math.ceil(this.products.length / this.perPage)"
