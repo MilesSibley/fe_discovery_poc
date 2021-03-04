@@ -43,7 +43,7 @@
   <v-container>
       <v-row>
         <v-spacer></v-spacer>
-        <v-col cols="3">
+        <v-col cols="4">
           <FormulateForm class="product-form">
             <center>
               <img class="product-image" v-if="imageSrc != ''" v-bind:src="imageSrc"/>

@@ -17,10 +17,17 @@
         </v-row>
         <v-row>
             <v-spacer/>
-            <v-col cols="4">
+            <v-col cols="2">
                 <v-btn @click="retrieveProductImages('https://api.mocki.io/v1/105eeeab')" elevation="2">Load 2000 Images</v-btn>
+            </v-col>
+            <v-col cols="2">
                 <v-btn @click="retrieveProductImages('https://api.mocki.io/v1/43f59ddd')" elevation="2">Load 5000 Images</v-btn>
+            </v-col>
+            <v-col cols="2">
                 <v-btn @click="retrieveProductImages('https://api.mocki.io/v1/f8e1698d')" elevation="2">Load 10000 Images</v-btn>    
+            </v-col>
+            <v-col cols="2">
+                <v-btn @click="retrieveProductImages('https://api.mocki.io/v1/d4b987e1')" elevation="2">Load 10000 High-Res Images</v-btn>    
             </v-col>
             <v-spacer/>
         </v-row>
