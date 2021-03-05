@@ -19,6 +19,12 @@ const getters = {
 };
 
 const actions = {
+    setApplications: (context, payload) => (
+        context.commit('setApplications',payload)
+    ),
+    setTypes: (context, payload) => (
+        context.commit('setTypes',payload)
+    )
 };
 
 const mutations = {
@@ -39,7 +45,6 @@ const mutations = {
     
     
 };
-
 
 export default{
     state,

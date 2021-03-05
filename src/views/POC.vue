@@ -39,7 +39,7 @@
 import Alert from "@/components/layout/Alert.vue";
 import axios from 'axios';
 import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue';
-import {mapMutations} from 'vuex';
+import {mapActions,mapMutations} from 'vuex';
 import ProductDetails from '@/components/ProductCardDisplay.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import UpsertForm from "@/components/UpsertForm.vue";
@@ -52,18 +52,6 @@ export default {
         UpsertForm,
         SearchBar,
         LoadingAnimation
-    },
-    data(){
-        return{
-            productList:[],
-            productDetails:[],
-            filteredProductDetails:[],
-            selectedProduct:{},
-                        
-            //Current component details
-            currentComponent: 'ProductDetails',
-            componentKey: 0
-        }      
     },
     computed: {
         currentProperties: function() {
@@ -92,10 +80,8 @@ export default {
             "https://my-json-server.typicode.com/MilesSibley/JSON-Server/application"
         )
         .then((response) => {
-            var data = response.data;
-            for (var i = 0; i < data.length; i++) {
-                this.addToApplications(data[i].name)
-            }
+            let applications = response.data.map(value => value.name)
+            this.setApplications(applications)
         })
         .catch((err) => console.log(err));
 
@@ -105,17 +91,30 @@ export default {
             "https://my-json-server.typicode.com/MilesSibley/JSON-Server/type"
         )
         .then((response) => {
-            var data = response.data;
-            for (var i = 0; i < data.length; i++) {
-                this.addToTypes(data[i].name)
-            }
+            let types = response.data.map(value => value.name)
+            this.setTypes(types)
         })
         .catch((err) => console.log(err));
     },
+    data(){
+        return{
+            productList:[],
+            productDetails:[],
+            filteredProductDetails:[],
+            selectedProduct:{},
+                        
+            //Current component details
+            currentComponent: 'ProductDetails',
+            componentKey: 0
+        }      
+    },
     methods: {
         ...mapMutations([
-            'addToApplications',
-            'addToTypes',
+            
+        ]),
+        ...mapActions([
+            'setApplications',
+            'setTypes'
         ]),
         //CRUD operations
         createProduct(formValues){

@@ -58,7 +58,8 @@ export default {
         LoadingAnimation
     },
     created(){
-        this.setUpsertDropdowns()
+        this.setApplications(["Flow Cytometry","N/A","Western Blot"])
+        this.setTypes(["Data","Linearity"])
     },
     data(){
         return{
@@ -216,11 +217,6 @@ export default {
         //Search Functionality
         buildSearchValue(searchValue){
             this.productSearchValue = searchValue
-        },
-        //Setup states needed for Upsert Form
-        setUpsertDropdowns(){
-            this.setApplications(["Flow Cytometry","N/A","Western Blot"]),
-            this.setTypes(["Data","Linearity"])
         },
         //Dynamic Components
         launchUpsert_Create()
