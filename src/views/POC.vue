@@ -19,7 +19,6 @@
             <v-col cols="1"/>
             <v-col cols="10">
                 <component :is="currentComponent" 
-                    v-bind="currentProperties"
                     v-on:cancel-productForm="cancelUpsert"
                     v-on:create-product="createProduct"
                     v-on:edit-product="launchUpsert_Update"
@@ -61,16 +60,7 @@ export default {
             'getSelectedProduct'
         ]),
         currentProperties: function() {
-            
-            if(this.currentComponent === 'UpsertForm') 
-            {
-                return { 
-                    product: this.getSelectedProduct
-            
-                }
-            }
-            else
-                return {}        
+            return {}
         }
     },   
     created(){
@@ -101,11 +91,10 @@ export default {
     data(){
         return{
             productList:[],
-            selectedProduct:{},
-                        
+
             //Current component details
-            currentComponent: 'ProductDetails',
-            componentKey: 0
+            componentKey: 0,
+            currentComponent: 'ProductDetails'
         }      
     },
     methods: {
@@ -154,7 +143,9 @@ export default {
                     }
                 })
                 this.resetProductDetails(products)
-                this.currentComponent = 'ProductDetails'      
+                this.currentComponent = 'ProductDetails'
+                console.log('current component: ' + this.currentComponent)
+
             })
             .catch(err => console.log(err));
         },
@@ -210,7 +201,7 @@ export default {
         //Dynamic Components
         launchUpsert_Create()
         {
-            this.selectedProduct = {}
+            this.setSelectedProduct({})
             this.currentComponent = 'UpsertForm'
         },
         launchUpsert_Update(product)

@@ -1,23 +1,29 @@
 const state = {
-    applications: [],
-    filteredProductDetails:[],
+    //Product Cards
     productDetails:[],
-    selectedProduct:{},
+    filteredProductDetails:[],
+    
+    //Upsert Form
+    applications: [],
     types: [],
-
-    testvalue: 3
+    selectedProduct:{},
+    
+    //Image Uploader
+    productImagesList:[]
 };
 
 const getters = {
-    getApplications: (state) => state.applications,
-    getFilteredProductDetails: (state) => state.filteredProductDetails,
     getProductDetails: (state) => state.productDetails,
-    getSelectedProduct: (state) => state.selectedProduct,
+    getFilteredProductDetails: (state) => state.filteredProductDetails,
+    
+    getApplications: (state) => state.applications,
     getTypes: (state) => state.types,
-
+    getSelectedProduct: (state) => state.selectedProduct,
     getPropertySelectedProduct:(state) => (key) =>  {
         return state.selectedProduct[key]
-    }
+    },
+
+    getProductImagesList: (state) => state.productImagesList
 };
 
 const actions = {
@@ -27,6 +33,7 @@ const actions = {
     setTypes: (context, payload) => (
         context.commit('setTypes',payload)
     ),
+
     resetProductDetails: (context, payload) => {
         context.commit('setProductDetails',payload)
         context.commit('setFilteredProductDetails',payload)
@@ -35,13 +42,13 @@ const actions = {
 
 const mutations = {
     //Setters for the various states
-    setApplications: (state, details) => (state.applications = details),
-    setFilteredProductDetails: (state, details) => (state.filteredProductDetails = details),
     setProductDetails: (state, details) => (state.productDetails = details),
-    setSelectedProduct: (state, details) => (state.selectedProduct = details),
+    setFilteredProductDetails: (state, details) => (state.filteredProductDetails = details),
+    setApplications: (state, details) => (state.applications = details),
     setTypes: (state, details) => (state.types = details),
+    setSelectedProduct: (state, details) => (state.selectedProduct = details),
     
-    //Add indivividual properties to state arrays and objects
+    //Add indivividual properties to state arrays
     addToApplications: (state, payload) => (state.applications.push(payload)),
     addToProductDetails: (state, payload) => (state.productDetails.push(payload)),
     addToSelectedProduct: (state, payload) => (

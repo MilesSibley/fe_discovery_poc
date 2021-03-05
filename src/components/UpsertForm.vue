@@ -124,11 +124,10 @@ export default {
       imageFile:''
     };
   },
-  computed: mapGetters(['getApplications','getTypes']),
+  computed: mapGetters(['getApplications','getTypes','getSelectedProduct']),
   created() {
-    console.log(this.product)
     //Set the formvalues to the props that were passed in
-    this.formValues = this.product;
+    this.formValues = this.getSelectedProduct;
     
     if("imageSrc" in this.formValues){
       this.editMode = true;      
@@ -148,8 +147,7 @@ export default {
      this.imageSrc = payload.__ob__.value.previewData
      this.imageFile = payload.__ob__.value.file
     }
-  },
-  props: ["product"],
+  }
 };
 </script>
 

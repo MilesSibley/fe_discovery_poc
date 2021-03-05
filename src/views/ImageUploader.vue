@@ -63,22 +63,7 @@ export default {
             'getProductDetails',
             'getPropertySelectedProduct',
             'getSelectedProduct'
-        ]),
-        currentProperties: function() {
-            if (this.currentComponent === 'ProductDetails') {
-                return { 
-                    products: this.getFilteredProductDetails 
-                }
-            }
-            else if(this.currentComponent === 'UpsertForm') 
-            {
-                return { 
-                    product: this.selectedProduct
-                }
-            }
-            else
-                return {}
-        },
+        ])
     },   
     created(){
         this.setApplications(["Flow Cytometry","N/A","Western Blot"])
@@ -92,14 +77,13 @@ export default {
             
             //Props being sent to the ProductForm component
             productCode: '',
-            selectedProduct:{},
             
             //The search criteria being emitted from the search bar
             productSearchValue: '',
             
             //Current component details
-            currentComponent: 'ProductDetails',
-            componentKey: 0
+            componentKey: 0,
+            currentComponent: 'ProductDetails'
         }      
     },
     methods: {
@@ -203,13 +187,13 @@ export default {
             .catch(err => console.log(err));
         },
         deleteProductImage(id){
-            this.selectedProduct = this.productImagesList.find(entry => entry.$id == id )
+            this.setSelectedProduct(this.productImagesList.find(entry => entry.$id == id ))
 
             //Filter out the deleted product from the view
             this.resetProductDetails(this.getProductDetails.filter( product => product.id !== id));
-            //this.refreshComponent()
             
-            axios.delete(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?id=${this.selectedProduct[0].imageGuid}`)
+            let imageGuid = this.getPropertyselectedProduct('imageGuid')
+            axios.delete(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?id=${imageGuid}`)
                 .then((res) => { 
                     if(res.status == 200){
                         this.$refs.alert.displayResult("success","Product Deleted", "Response code: " + res.status)
@@ -227,9 +211,7 @@ export default {
         //Dynamic Components
         launchUpsert_Create()
         {
-            this.selectedProduct = {
-                productCode: this.productCode
-            }
+            this.setSelectedProduct({productCode: this.productCode})
 
             this.currentComponent = 'UpsertForm'
         },
@@ -239,7 +221,7 @@ export default {
             var productImage = this.productImagesList.filter(entry => entry.$id == product.id )
             
             //Set up the product props to send to the Product Form component
-            this.selectedProduct = {
+            this.setSelectedProduct({
                 application: productImage[0].applicationName,
                 id:productImage[0].$id,
                 imageAltText:productImage[0].imageAltText,
@@ -253,7 +235,7 @@ export default {
                 productCode: productImage[0].productCode,
                 type: productImage[0].imageType,
                 WebfileLocation: productImage[0].WebfileLocation,
-            }
+            })
             
             this.currentComponent = 'UpsertForm'
 
