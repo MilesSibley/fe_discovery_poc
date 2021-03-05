@@ -11,8 +11,8 @@
         </v-card-subtitle>
         <v-card-actions>
             <v-btn text> View Details </v-btn>
-            <v-btn icon @click="show = !show">
-                <v-icon>{{ show ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
+            <v-btn icon @click="show = !showDetails">
+                <v-icon>{{ showDetails ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
             <v-spacer></v-spacer>
@@ -24,7 +24,7 @@
             </v-btn>
         </v-card-actions>
         <v-expand-transition>
-            <div v-show="show">
+            <div v-show="showDetails">
                 <v-divider></v-divider>
                 <v-card-text>
                     {{product.details}}
@@ -38,7 +38,7 @@
 export default {
   name: "ProductCard",
   data: () => ({
-    show: false,
+    showDetails: false,
   }),
   props: ["product"],
 };

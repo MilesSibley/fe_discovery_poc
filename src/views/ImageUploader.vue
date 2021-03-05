@@ -43,7 +43,7 @@
 import Alert from "@/components/layout/Alert.vue";
 import axios from 'axios';
 import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue';
-import {mapMutations} from 'vuex';
+import {mapActions,mapGetters,mapMutations} from 'vuex';
 import ProductDetails from '@/components/ProductCardDisplay.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import UpsertForm from "@/components/UpsertForm.vue";
@@ -57,15 +57,17 @@ export default {
         SearchBar,
         LoadingAnimation
     },
-    created(){
-        this.setApplications(["Flow Cytometry","N/A","Western Blot"])
-        this.setTypes(["Data","Linearity"])
-    },
     computed: {
+        ...mapGetters([
+            'getFilteredProductDetails',
+            'getProductDetails',
+            'getPropertySelectedProduct',
+            'getSelectedProduct'
+        ]),
         currentProperties: function() {
             if (this.currentComponent === 'ProductDetails') {
                 return { 
-                    products: this.productCardDetails 
+                    products: this.getFilteredProductDetails 
                 }
             }
             else if(this.currentComponent === 'UpsertForm') 
@@ -78,13 +80,15 @@ export default {
                 return {}
         },
     },   
+    created(){
+        this.setApplications(["Flow Cytometry","N/A","Western Blot"])
+        this.setTypes(["Data","Linearity"])
+        this.resetProductDetails([])
+    },
     data(){
         return{
             //The list of all product images currently displaying
             productImagesList:[],
-            
-            //Props being passed to the Products component
-            productCardDetails:[],
             
             //Props being sent to the ProductForm component
             productCode: '',
@@ -100,8 +104,13 @@ export default {
     },
     methods: {
         ...mapMutations([
+            'setFilteredProductDetails',
+            'setProductDetails',
+        ]),
+        ...mapActions([
+            'resetProductDetails',
             'setApplications',
-            'setTypes',
+            'setTypes'
         ]),
         //CRUD functionality
         createProductImage(formValues){
@@ -145,25 +154,22 @@ export default {
         },
         retrieveProductImages(){
             this.productCode = this.productSearchValue
-            this.productCardDetails = [],
+            
             this.currentComponent = 'LoadingAnimation'
             axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${this.productCode}`)
             .then(res => {
                 this.productImagesList = res.data
-                for (var i = 0; i < this.productImagesList.length; i++) {
-                    
-                    //From the results returned, build up the props that will be passed to the ProductDetails component
-                    this.productCardDetails.push({
-                        id: this.productImagesList[i].$id,
-                        image: this.productImagesList[i].fileLocation,
-                        title: this.productImagesList[i].productCode + " - Image " +  this.productImagesList[i].imageOrder,
-                        subtitle: this.productImagesList[i].fileName,
-                        details: this.productImagesList[i].legendTitle,
-                        status: this.productImagesList[i].imageStatus
-                    })
-                }
-                this.currentComponent = 'ProductDetails'      
-                this.refreshComponent()
+                let products = res.data.map(value => {return  {
+                        id: value.$id,
+                        image: value.fileLocation,
+                        title: value.productCode + " - Image " +  value.imageOrder,
+                        subtitle: value.fileName,
+                        details: value.legendTitle,
+                        status: value.imageStatus,
+                    }
+                })
+                this.resetProductDetails(products)
+                this.currentComponent = 'ProductDetails'   
             })
             .catch(err => console.log(err));
         },
@@ -197,11 +203,11 @@ export default {
             .catch(err => console.log(err));
         },
         deleteProductImage(id){
-            this.selectedProduct = this.productImagesList.filter(entry => entry.$id == id )
+            this.selectedProduct = this.productImagesList.find(entry => entry.$id == id )
 
             //Filter out the deleted product from the view
-            this.productCardDetails = this.productCardDetails.filter( product => product.id !== id);
-            this.refreshComponent()
+            this.resetProductDetails(this.getProductDetails.filter( product => product.id !== id));
+            //this.refreshComponent()
             
             axios.delete(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?id=${this.selectedProduct[0].imageGuid}`)
                 .then((res) => { 

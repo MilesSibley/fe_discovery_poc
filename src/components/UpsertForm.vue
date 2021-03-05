@@ -126,6 +126,7 @@ export default {
   },
   computed: mapGetters(['getApplications','getTypes']),
   created() {
+    console.log(this.product)
     //Set the formvalues to the props that were passed in
     this.formValues = this.product;
     

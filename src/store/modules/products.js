@@ -3,7 +3,9 @@ const state = {
     filteredProductDetails:[],
     productDetails:[],
     selectedProduct:{},
-    types: []
+    types: [],
+
+    testvalue: 3
 };
 
 const getters = {
@@ -24,7 +26,11 @@ const actions = {
     ),
     setTypes: (context, payload) => (
         context.commit('setTypes',payload)
-    )
+    ),
+    resetProductDetails: (context, payload) => {
+        context.commit('setProductDetails',payload)
+        context.commit('setFilteredProductDetails',payload)
+    }
 };
 
 const mutations = {

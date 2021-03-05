@@ -39,7 +39,7 @@
 import Alert from "@/components/layout/Alert.vue";
 import axios from 'axios';
 import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue';
-import {mapActions,mapMutations} from 'vuex';
+import {mapActions,mapGetters,mapMutations} from 'vuex';
 import ProductDetails from '@/components/ProductCardDisplay.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import UpsertForm from "@/components/UpsertForm.vue";
@@ -54,21 +54,23 @@ export default {
         LoadingAnimation
     },
     computed: {
+        ...mapGetters([
+            'getFilteredProductDetails',
+            'getProductDetails',
+            'getPropertySelectedProduct',
+            'getSelectedProduct'
+        ]),
         currentProperties: function() {
-            if (this.currentComponent === 'ProductDetails') {
-                return { 
-                    products: this.filteredProductDetails 
-                }
-            }
-            else if(this.currentComponent === 'UpsertForm') 
+            
+            if(this.currentComponent === 'UpsertForm') 
             {
                 return { 
-                    product: this.selectedProduct,
-                    types:this.types
+                    product: this.getSelectedProduct
+            
                 }
             }
             else
-                return {}
+                return {}        
         }
     },   
     created(){
@@ -99,8 +101,6 @@ export default {
     data(){
         return{
             productList:[],
-            productDetails:[],
-            filteredProductDetails:[],
             selectedProduct:{},
                         
             //Current component details
@@ -110,9 +110,13 @@ export default {
     },
     methods: {
         ...mapMutations([
-            
+            'addToSelectedProduct',
+            'setFilteredProductDetails',
+            'setProductDetails',
+            'setSelectedProduct'
         ]),
         ...mapActions([
+            'resetProductDetails',
             'setApplications',
             'setTypes'
         ]),
@@ -139,18 +143,17 @@ export default {
             this.currentComponent = 'LoadingAnimation'
             axios.get('https://my-json-server.typicode.com/MilesSibley/JSON-Server/products')
             .then(res => {
-                this.productList = res.data 
-                for (var i = 0; i < this.productList.length; i++) {
-                    this.productDetails.push({
-                        id: this.productList[i].id,
-                        image: this.productList[i].image,
-                        title: this.productList[i].name,
-                        subtitle: this.productList[i].fileName,
-                        details: this.productList[i].legendTitle,
-                        status: this.productList[i].imageStatus
-                    })
-                }
-                this.filteredProductDetails = this.productDetails
+                this.productList = res.data
+                let products = res.data.map(value => {return  {
+                        id: value.id,
+                        image: value.image,
+                        title: value.name,
+                        subtitle: value.fileName,
+                        details: value.legendTitle,
+                        status: value.imageStatus,
+                    }
+                })
+                this.resetProductDetails(products)
                 this.currentComponent = 'ProductDetails'      
             })
             .catch(err => console.log(err));
@@ -181,7 +184,8 @@ export default {
                         this.$refs.alert.displayResult("success","Product Deleted", "Response code: " + res.status)
 
                         //Filter out the deleted product from the view
-                        this.filteredProductDetails = this.filteredProductDetails.filter( product => product.id !== id);
+                        this.setProductDetails(this.getProductDetails.filter( product => product.id !== id));
+                        this.setFilteredProductDetails(this.getFilteredProductDetails.filter( product => product.id !== id));
                         this.refreshComponent();
                     }
                     else{
@@ -193,13 +197,13 @@ export default {
         //Filtering
         filterProductList(filterOnValue){
             if(filterOnValue == ''){
-                this.filteredProductDetails = this.productDetails
+                this.setFilteredProductDetails(this.getProductDetails)
             }
             else{
-                this.filteredProductDetails = this.productDetails.filter( product => { 
+                this.setFilteredProductDetails(this.getProductDetails.filter( product => {
                     return (product.title.toLowerCase().includes(filterOnValue.toLowerCase()) ||
                             product.subtitle.toLowerCase().includes(filterOnValue.toLowerCase()))
-                    });
+                    }));
             }
             this.refreshComponent()
         },
@@ -212,9 +216,12 @@ export default {
         launchUpsert_Update(product)
         {
             //Set up the product props to send to the Product Form component
-            this.selectedProduct = this.productList[product.id]
-            
-            this.selectedProduct.imageSrc = this.selectedProduct.image
+            this.setSelectedProduct(this.productList[product.id])
+            this.addToSelectedProduct({
+                key:"imageSrc",
+                value: this.getPropertySelectedProduct("image")
+            })
+
             this.currentComponent = 'UpsertForm'
 
         },
