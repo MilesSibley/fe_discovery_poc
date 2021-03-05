@@ -11,7 +11,7 @@
         </v-card-subtitle>
         <v-card-actions>
             <v-btn text> View Details </v-btn>
-            <v-btn icon @click="show = !showDetails">
+            <v-btn icon @click="showDetails = !showDetails">
                 <v-icon>{{ showDetails ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
