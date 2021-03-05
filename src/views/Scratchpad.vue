@@ -4,7 +4,7 @@
         <v-row>
             <v-col cols="1"/>
             <v-col cols="6">
-                <h1 >Original POC - {{getTestValue}}</h1>
+                <h1 >ScratchPad</h1>
             </v-col>
             <v-col cols="2">
                 <SearchBar v-if="currentComponent == 'ProductDetails'" v-on:search-typeahead="this.filterProductList"/>
@@ -56,9 +56,6 @@ export default {
     data(){
         return{
             productList:[],
-            selectedProduct:{},
-            applications: [],
-            types: [],
                         
             //Current component details
             currentComponent: 'ProductDetails',
@@ -67,10 +64,12 @@ export default {
     },
     computed: {
         ...mapGetters([
-            'getTestValue',
-            'getProductDetails',
+            'getApplications',
             'getFilteredProductDetails',
-            'getSelectedProduct'
+            'getProductDetails',
+            'getPropertySelectedProduct',
+            'getSelectedProduct',
+            'getTypes'
         ]),
         currentProperties: function() {
             if (this.currentComponent === 'ProductDetails') {
@@ -82,8 +81,8 @@ export default {
             {
                 return { 
                     product: this.getSelectedProduct,
-                    applications:this.applications,
-                    types:this.types
+                    applications: this.getApplications,
+                    types:this.getTypes
                 }
             }
             else
@@ -102,7 +101,7 @@ export default {
         .then((response) => {
             var data = response.data;
             for (var i = 0; i < data.length; i++) {
-            this.applications.push(data[i].name);
+                this.addToApplications(data[i].name)
             }
         })
         .catch((err) => console.log(err));
@@ -115,18 +114,21 @@ export default {
         .then((response) => {
             var data = response.data;
             for (var i = 0; i < data.length; i++) {
-            this.types.push(data[i].name);
+                this.addToTypes(data[i].name)
             }
         })
         .catch((err) => console.log(err));
     },
     methods: {
         ...mapMutations([
-            'setProductDetails',
+            'addToApplications',
             'addToProductDetails',
+            'addToSelectedProduct',
+            'addToTypes',
+            'setApplications',
             'setFilteredProductDetails',
+            'setProductDetails',
             'setSelectedProduct',
-            'addValueToSelectedProduct'
         ]),
         //CRUD operations
         createProduct(formValues){
@@ -148,7 +150,10 @@ export default {
         },
         retrieveProducts()
         {
+            
             this.currentComponent = 'LoadingAnimation'
+            this.setProductDetails([])
+
             axios.get('https://my-json-server.typicode.com/MilesSibley/JSON-Server/products')
             .then(res => {
                 this.productList = res.data 
@@ -160,7 +165,6 @@ export default {
                         details: this.productList[i].legendTitle,
                         status: this.productList[i].imageStatus}
                     this.addToProductDetails(details)
-                    
                 }
                 this.setFilteredProductDetails(this.getProductDetails)
                 this.currentComponent = 'ProductDetails'      
@@ -192,7 +196,8 @@ export default {
                     if(res.status == 200){
                         this.$refs.alert.displayResult("success","Product Deleted", "Response code: " + res.status)
 
-                        //Filter out the deleted product from the view
+                        //Filter out the deleted product from the both the details and filtered details list.
+                        this.setProductDetails(this.getProductDetails.filter( product => product.id !== id));
                         this.setFilteredProductDetails(this.getFilteredProductDetails.filter( product => product.id !== id));
                         this.refreshComponent();
                     }
@@ -218,15 +223,17 @@ export default {
         //Dynamic Components
         launchUpsert_Create()
         {
-            this.set = {}
+            this.setSelectedProduct({})
             this.currentComponent = 'UpsertForm'
         },
         launchUpsert_Update(product)
         {
             //Set up the product props to send to the Product Form component
             this.setSelectedProduct(this.productList[product.id])
-            var selectedProduct = this.getSelectedProduct
-            this.addValueToSelectedProduct({key:"imageSrc",value: selectedProduct.image})
+            this.addToSelectedProduct({
+                key:"imageSrc",
+                value: this.getPropertySelectedProduct("image")
+            })
             this.currentComponent = 'UpsertForm'
 
         },

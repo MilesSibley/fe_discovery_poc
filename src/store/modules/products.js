@@ -1,27 +1,43 @@
 const state = {
-    testValue: 3000,
-    productDetails:[],
+    applications: [],
     filteredProductDetails:[],
-    selectedProduct:{}
-
+    productDetails:[],
+    selectedProduct:{},
+    types: []
 };
 
 const getters = {
-    getTestValue: (state) => state.testValue,
-    getProductDetails: (state) => state.productDetails,
+    getApplications: (state) => state.applications,
     getFilteredProductDetails: (state) => state.filteredProductDetails,
-    getSelectedProduct: (state) => state.selectedProduct
+    getProductDetails: (state) => state.productDetails,
+    getSelectedProduct: (state) => state.selectedProduct,
+    getTypes: (state) => state.types,
 
+    getPropertySelectedProduct:(state) => (key) =>  {
+        return state.selectedProduct[key]
+    }
 };
 
-const actions = {};
+const actions = {
+};
 
 const mutations = {
-    setProductDetails: (state, details) => (state.productDetails = details),
-    addToProductDetails: (state, productDetailsObject) => (state.productDetails.push(productDetailsObject)),
+    //Setters for the various states
+    setApplications: (state, details) => (state.applications = details),
     setFilteredProductDetails: (state, details) => (state.filteredProductDetails = details),
+    setProductDetails: (state, details) => (state.productDetails = details),
     setSelectedProduct: (state, details) => (state.selectedProduct = details),
-    addValueToSelectedProduct: (state, payload) => (console.log(payload.key),console.log(payload.value),state.selectedProduct[payload.key] = payload.value)
+    setTypes: (state, details) => (state.types = details),
+    
+    //Add indivividual properties to state arrays and objects
+    addToApplications: (state, payload) => (state.applications.push(payload)),
+    addToProductDetails: (state, payload) => (state.productDetails.push(payload)),
+    addToSelectedProduct: (state, payload) => (
+        state.selectedProduct[payload.key] = payload.value
+    ),
+    addToTypes: (state, payload) => (state.types.push(payload)),
+    
+    
 };
 
 
