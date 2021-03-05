@@ -74,7 +74,7 @@
             <FormulateInput
               name="application"
               type="select"
-              :options="applications"
+              :options="getApplications"
               placeholder="Select an option"
               label="Application"
               validation="required"
@@ -82,7 +82,7 @@
             <FormulateInput
               name="type"
               type="select"
-              :options="types"
+              :options="getTypes"
               placeholder="Select an option"
               label="Type"
               validation="required"
@@ -113,6 +113,8 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex';
+
 export default {
   data() {
     return {
@@ -122,6 +124,7 @@ export default {
       imageFile:''
     };
   },
+  computed: mapGetters(['getApplications','getTypes']),
   created() {
     //Set the formvalues to the props that were passed in
     this.formValues = this.product;
@@ -145,7 +148,7 @@ export default {
      this.imageFile = payload.__ob__.value.file
     }
   },
-  props: ["product","applications","types"],
+  props: ["product"],
 };
 </script>
 

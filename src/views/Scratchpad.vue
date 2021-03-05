@@ -64,12 +64,10 @@ export default {
     },
     computed: {
         ...mapGetters([
-            'getApplications',
             'getFilteredProductDetails',
             'getProductDetails',
             'getPropertySelectedProduct',
-            'getSelectedProduct',
-            'getTypes'
+            'getSelectedProduct'
         ]),
         currentProperties: function() {
             if (this.currentComponent === 'ProductDetails') {
@@ -80,9 +78,7 @@ export default {
             else if(this.currentComponent === 'UpsertForm') 
             {
                 return { 
-                    product: this.getSelectedProduct,
-                    applications: this.getApplications,
-                    types:this.getTypes
+                    product: this.getSelectedProduct
                 }
             }
             else
@@ -125,7 +121,6 @@ export default {
             'addToProductDetails',
             'addToSelectedProduct',
             'addToTypes',
-            'setApplications',
             'setFilteredProductDetails',
             'setProductDetails',
             'setSelectedProduct',

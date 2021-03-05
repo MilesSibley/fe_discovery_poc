@@ -39,6 +39,7 @@
 import Alert from "@/components/layout/Alert.vue";
 import axios from 'axios';
 import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue';
+import {mapMutations} from 'vuex';
 import ProductDetails from '@/components/ProductCardDisplay.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import UpsertForm from "@/components/UpsertForm.vue";
@@ -58,8 +59,6 @@ export default {
             productDetails:[],
             filteredProductDetails:[],
             selectedProduct:{},
-            applications: [],
-            types: [],
                         
             //Current component details
             currentComponent: 'ProductDetails',
@@ -77,7 +76,6 @@ export default {
             {
                 return { 
                     product: this.selectedProduct,
-                    applications:this.applications,
                     types:this.types
                 }
             }
@@ -96,7 +94,7 @@ export default {
         .then((response) => {
             var data = response.data;
             for (var i = 0; i < data.length; i++) {
-            this.applications.push(data[i].name);
+                this.addToApplications(data[i].name)
             }
         })
         .catch((err) => console.log(err));
@@ -109,12 +107,16 @@ export default {
         .then((response) => {
             var data = response.data;
             for (var i = 0; i < data.length; i++) {
-            this.types.push(data[i].name);
+                this.addToTypes(data[i].name)
             }
         })
         .catch((err) => console.log(err));
     },
     methods: {
+        ...mapMutations([
+            'addToApplications',
+            'addToTypes',
+        ]),
         //CRUD operations
         createProduct(formValues){
             this.currentComponent = 'LoadingAnimation'

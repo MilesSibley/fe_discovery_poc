@@ -40,12 +40,13 @@
 </template>
 
 <script>
-import axios from 'axios';
-import ProductDetails from '@/components/ProductCardDisplay.vue'
-import UpsertForm from "@/components/UpsertForm.vue";
-import SearchBar from '@/components/SearchBar.vue'
 import Alert from "@/components/layout/Alert.vue";
-import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue'
+import axios from 'axios';
+import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue';
+import {mapMutations} from 'vuex';
+import ProductDetails from '@/components/ProductCardDisplay.vue';
+import SearchBar from '@/components/SearchBar.vue';
+import UpsertForm from "@/components/UpsertForm.vue";
 
 export default {
     name: 'ProductImages',
@@ -55,6 +56,9 @@ export default {
         UpsertForm,
         SearchBar,
         LoadingAnimation
+    },
+    created(){
+        this.setUpsertDropdowns()
     },
     data(){
         return{
@@ -86,9 +90,7 @@ export default {
             else if(this.currentComponent === 'UpsertForm') 
             {
                 return { 
-                    product: this.selectedProduct,
-                    applications: ["Flow Cytometry","N/A","Western Blot"], 
-                    types: ["Data","Linearity"]
+                    product: this.selectedProduct
                 }
             }
             else
@@ -96,6 +98,10 @@ export default {
         },
     },   
     methods: {
+        ...mapMutations([
+            'setApplications',
+            'setTypes',
+        ]),
         //CRUD functionality
         createProductImage(formValues){
             this.currentComponent = 'LoadingAnimation'
@@ -210,6 +216,11 @@ export default {
         //Search Functionality
         buildSearchValue(searchValue){
             this.productSearchValue = searchValue
+        },
+        //Setup states needed for Upsert Form
+        setUpsertDropdowns(){
+            this.setApplications(["Flow Cytometry","N/A","Western Blot"]),
+            this.setTypes(["Data","Linearity"])
         },
         //Dynamic Components
         launchUpsert_Create()
