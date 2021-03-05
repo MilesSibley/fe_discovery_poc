@@ -15,14 +15,12 @@ const state = {
 const getters = {
     getProductDetails: (state) => state.productDetails,
     getFilteredProductDetails: (state) => state.filteredProductDetails,
-    
     getApplications: (state) => state.applications,
     getTypes: (state) => state.types,
     getSelectedProduct: (state) => state.selectedProduct,
     getPropertySelectedProduct:(state) => (key) =>  {
         return state.selectedProduct[key]
     },
-
     getProductImagesList: (state) => state.productImagesList
 };
 
@@ -33,7 +31,6 @@ const actions = {
     setTypes: (context, payload) => (
         context.commit('setTypes',payload)
     ),
-
     resetProductDetails: (context, payload) => {
         context.commit('setProductDetails',payload)
         context.commit('setFilteredProductDetails',payload)
@@ -47,7 +44,8 @@ const mutations = {
     setApplications: (state, details) => (state.applications = details),
     setTypes: (state, details) => (state.types = details),
     setSelectedProduct: (state, details) => (state.selectedProduct = details),
-    
+    setProductImagesList: (state, details) => (state.productImagesList = details),
+
     //Add indivividual properties to state arrays
     addToApplications: (state, payload) => (state.applications.push(payload)),
     addToProductDetails: (state, payload) => (state.productDetails.push(payload)),

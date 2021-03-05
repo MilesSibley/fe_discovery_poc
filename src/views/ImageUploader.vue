@@ -7,10 +7,10 @@
                     <h1 >Bio-Techne Image Uploader POC</h1>
                 </v-col>
                 <v-col cols="2">
-                    <SearchBar v-if="currentComponent == 'ProductDetails'" v-on:search-typeahead="buildSearchValue" v-on:search-onchange="retrieveProductImages"/>
+                    <SearchBar v-if="currentComponent == 'ProductDetails'" v-on:search-typeahead="buildSearchValue" v-on:search-onchange="retrieveProductImages(productSearchValue)"/>
                 </v-col>
                 <v-col cols="1">
-                    <v-btn v-if="currentComponent == 'ProductDetails'" @click="retrieveProductImages" elevation="2">Find Images</v-btn>
+                    <v-btn v-if="currentComponent == 'ProductDetails'" @click="retrieveProductImages(productSearchValue)" elevation="2">Find Images</v-btn>
                 </v-col>
                 <v-col cols="2">
                     <v-btn v-if="currentComponent == 'ProductDetails' && productCode != 0" icon @click="launchUpsert_Create">
@@ -23,13 +23,11 @@
                 <v-col cols="1"/>
                 <v-col cols="10">
                     <component :is="currentComponent" 
-                        v-bind="currentProperties"
                         v-on:cancel-productForm="cancelUpsert"
                         v-on:create-product="createProductImage"
                         v-on:edit-product="launchUpsert_Update"
                         v-on:update-product="updateProductImage"
                         v-on:del-product="deleteProductImage"
-                        :key="componentKey" 
                     />
                 </v-col>
                 <v-col cols="1"/>
@@ -62,19 +60,17 @@ export default {
             'getFilteredProductDetails',
             'getProductDetails',
             'getPropertySelectedProduct',
-            'getSelectedProduct'
+            'getSelectedProduct',
+            'getProductImagesList'
         ])
     },   
     created(){
         this.setApplications(["Flow Cytometry","N/A","Western Blot"])
         this.setTypes(["Data","Linearity"])
-        this.resetProductDetails([])
+        this.setupProductDetails(this.getProductImagesList)
     },
     data(){
         return{
-            //The list of all product images currently displaying
-            productImagesList:[],
-            
             //Props being sent to the ProductForm component
             productCode: '',
             
@@ -82,7 +78,6 @@ export default {
             productSearchValue: '',
             
             //Current component details
-            componentKey: 0,
             currentComponent: 'ProductDetails'
         }      
     },
@@ -90,6 +85,8 @@ export default {
         ...mapMutations([
             'setFilteredProductDetails',
             'setProductDetails',
+            'setProductImagesList',
+            'setSelectedProduct'
         ]),
         ...mapActions([
             'resetProductDetails',
@@ -127,7 +124,7 @@ export default {
             })
             .then((res) => {
                 if (res.status == 200) {
-                    this.retrieveProductImages()
+                    this.retrieveProductImages(formValues.productCode)
                     this.$refs.alert.displayResult("success","Product Created", "Response code: " + res.status)
                 } else {
                     this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
@@ -136,23 +133,15 @@ export default {
             })
             .catch((err) => console.log(err));
         },
-        retrieveProductImages(){
-            this.productCode = this.productSearchValue
-            
+        retrieveProductImages(productCode){
+            console.log('searching fgor ' + productCode)
             this.currentComponent = 'LoadingAnimation'
-            axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${this.productCode}`)
+            axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${productCode}`)
             .then(res => {
-                this.productImagesList = res.data
-                let products = res.data.map(value => {return  {
-                        id: value.$id,
-                        image: value.fileLocation,
-                        title: value.productCode + " - Image " +  value.imageOrder,
-                        subtitle: value.fileName,
-                        details: value.legendTitle,
-                        status: value.imageStatus,
-                    }
-                })
-                this.resetProductDetails(products)
+                
+                this.setProductImagesList(res.data)
+                this.setupProductDetails(res.data)
+                
                 this.currentComponent = 'ProductDetails'   
             })
             .catch(err => console.log(err));
@@ -177,7 +166,7 @@ export default {
             axios.post("https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?productType=Antibody&baseImage=" + encodedBaseImage)
             .then((res) => {
                 if (res.status == 200) {
-                    this.retrieveProductImages()
+                    this.retrieveProductImages(formValues.productCode)
                     this.$refs.alert.displayResult("success","Product Updated", "Response code: " + res.status)
                 } else {
                     this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
@@ -187,7 +176,7 @@ export default {
             .catch(err => console.log(err));
         },
         deleteProductImage(id){
-            this.setSelectedProduct(this.productImagesList.find(entry => entry.$id == id ))
+            this.setSelectedProduct(this.getProductImagesList.find(entry => entry.$id == id ))
 
             //Filter out the deleted product from the view
             this.resetProductDetails(this.getProductDetails.filter( product => product.id !== id));
@@ -218,7 +207,7 @@ export default {
         launchUpsert_Update(product)
         {
             //Find the selected productImage in the list of all productImages
-            var productImage = this.productImagesList.filter(entry => entry.$id == product.id )
+            var productImage = this.getProductImagesList.filter(entry => entry.$id == product.id )
             
             //Set up the product props to send to the Product Form component
             this.setSelectedProduct({
@@ -238,13 +227,21 @@ export default {
             })
             
             this.currentComponent = 'UpsertForm'
-
         },
         cancelUpsert(){
             this.currentComponent = 'ProductDetails'
         },
-        refreshComponent() {
-            this.componentKey += 1;
+        setupProductDetails(data) {
+            let products = data.map(value => {return  {
+                    id: value.$id,
+                    image: value.fileLocation,
+                    title: value.productCode + " - Image " +  value.imageOrder,
+                    subtitle: value.fileName,
+                    details: value.legendTitle,
+                    status: value.imageStatus,
+                }
+            })
+            this.resetProductDetails(products)
         }
    
     }

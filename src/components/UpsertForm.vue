@@ -104,7 +104,7 @@
               <FormulateInput type="submit" label="Submit" @click="createOrUpdate" />
               <FormulateInput type="button" label="Cancel" @click="$emit('cancel-productForm')" />
             </div>
-            <!-- <pre class="code" v-text="formValues" /> -->
+            <pre class="code" v-text="formValues" />
           </FormulateForm>
         </v-col>
         <v-spacer></v-spacer>

@@ -144,7 +144,6 @@ export default {
                 })
                 this.resetProductDetails(products)
                 this.currentComponent = 'ProductDetails'
-                console.log('current component: ' + this.currentComponent)
 
             })
             .catch(err => console.log(err));
