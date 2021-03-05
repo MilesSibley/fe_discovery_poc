@@ -61,6 +61,23 @@ export default {
         this.setApplications(["Flow Cytometry","N/A","Western Blot"])
         this.setTypes(["Data","Linearity"])
     },
+    computed: {
+        currentProperties: function() {
+            if (this.currentComponent === 'ProductDetails') {
+                return { 
+                    products: this.productCardDetails 
+                }
+            }
+            else if(this.currentComponent === 'UpsertForm') 
+            {
+                return { 
+                    product: this.selectedProduct
+                }
+            }
+            else
+                return {}
+        },
+    },   
     data(){
         return{
             //The list of all product images currently displaying
@@ -81,23 +98,6 @@ export default {
             componentKey: 0
         }      
     },
-    computed: {
-        currentProperties: function() {
-            if (this.currentComponent === 'ProductDetails') {
-                return { 
-                    products: this.productCardDetails 
-                }
-            }
-            else if(this.currentComponent === 'UpsertForm') 
-            {
-                return { 
-                    product: this.selectedProduct
-                }
-            }
-            else
-                return {}
-        },
-    },   
     methods: {
         ...mapMutations([
             'setApplications',
@@ -259,7 +259,7 @@ export default {
             this.componentKey += 1;
         }
    
-     }
+    }
 }
 </script>
 
