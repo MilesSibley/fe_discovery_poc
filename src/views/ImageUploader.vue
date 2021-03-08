@@ -28,6 +28,7 @@
                         v-on:edit-product="launchUpsert_Update"
                         v-on:update-product="updateProductImage"
                         v-on:del-product="deleteProductImage"
+                        :key="componentKey"
                     />
                 </v-col>
                 <v-col cols="1"/>
@@ -78,6 +79,7 @@ export default {
             productSearchValue: '',
             
             //Current component details
+            componentKey: 0,
             currentComponent: 'ProductDetails'
         }      
     },
@@ -134,7 +136,7 @@ export default {
             .catch((err) => console.log(err));
         },
         retrieveProductImages(productCode){
-            console.log('searching fgor ' + productCode)
+            this.productCode = productCode
             this.currentComponent = 'LoadingAnimation'
             axios.get(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages/productimagebyproductcode/${productCode}`)
             .then(res => {
@@ -142,7 +144,8 @@ export default {
                 this.setProductImagesList(res.data)
                 this.setupProductDetails(res.data)
                 
-                this.currentComponent = 'ProductDetails'   
+                this.currentComponent = 'ProductDetails'
+                this.refreshComponent()   
             })
             .catch(err => console.log(err));
         },
@@ -180,8 +183,9 @@ export default {
 
             //Filter out the deleted product from the view
             this.resetProductDetails(this.getProductDetails.filter( product => product.id !== id));
-            
-            let imageGuid = this.getPropertyselectedProduct('imageGuid')
+            this.refreshComponent() 
+
+            let imageGuid = this.getPropertySelectedProduct('imageGuid')
             axios.delete(`https://aeroproductimageswebapidev.azurewebsites.net/api/BaseImages?id=${imageGuid}`)
                 .then((res) => { 
                     if(res.status == 200){
@@ -230,6 +234,9 @@ export default {
         },
         cancelUpsert(){
             this.currentComponent = 'ProductDetails'
+        },
+        refreshComponent() {
+            this.componentKey += 1;
         },
         setupProductDetails(data) {
             let products = data.map(value => {return  {
