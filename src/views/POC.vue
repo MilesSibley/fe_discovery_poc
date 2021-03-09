@@ -122,15 +122,15 @@ export default {
                 if (res.status == 201) {
                     //Show a success message
                     this.$refs.alert.displayResult("success","Product Created", "Response code: " + res.status)
-                    
-                    console.log(formValues)
+                    console.log(res.data)
                     //add the new product to the ProductDetails and FilteredProductDetails lists
                     let productDetails = {
+                        id: res.data.id,
                         image: formValues.imageSrc,
-                        title: formValues.name,
+                        title: res.data.name,
                         subtitle: formValues.name + '.jpg',
-                        details: formValues.legendTitle,
-                        status: formValues.imageStatus
+                        details: res.data.legendTitle,
+                        status: res.data.imageStatus
                     }
                     this.addToProductDetails(productDetails)
                     //this.addToFilteredProductDetails(productDetails)
