@@ -138,6 +138,7 @@ export default {
     createOrUpdate() {
       if (this.formValues.id == null) {
         this.formValues.imageFile = this.imageFile
+        this.formValues.imageSrc = this.imageSrc
         this.$emit("create-product", this.formValues);
       } else {
         this.$emit("update-product", this.formValues);

@@ -49,6 +49,7 @@ const mutations = {
     //Add indivividual properties to state arrays
     addToApplications: (state, payload) => (state.applications.push(payload)),
     addToProductDetails: (state, payload) => (state.productDetails.push(payload)),
+    addToFilteredProductDetails: (state, payload) => (state.filteredProductDetails.push(payload)),
     addToSelectedProduct: (state, payload) => (
         state.selectedProduct[payload.key] = payload.value
     ),

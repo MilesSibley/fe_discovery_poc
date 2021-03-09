@@ -99,6 +99,8 @@ export default {
     },
     methods: {
         ...mapMutations([
+            'addToProductDetails',
+            'addToFilteredProductDetails',
             'addToSelectedProduct',
             'setFilteredProductDetails',
             'setProductDetails',
@@ -111,16 +113,34 @@ export default {
         ]),
         //CRUD operations
         createProduct(formValues){
+            //Pull up the loading animation while we do the work.
             this.currentComponent = 'LoadingAnimation'
+            
+            //Make the API Call
             axios.post("https://my-json-server.typicode.com/MilesSibley/JSON-Server/products/",formValues)
             .then((res) => {
                 if (res.status == 201) {
-                    //Show a success message, and display the ProductDetails component
+                    //Show a success message
                     this.$refs.alert.displayResult("success","Product Created", "Response code: " + res.status)
+                    
+                    console.log(formValues)
+                    //add the new product to the ProductDetails and FilteredProductDetails lists
+                    let productDetails = {
+                        image: formValues.imageSrc,
+                        title: formValues.name,
+                        subtitle: formValues.name + '.jpg',
+                        details: formValues.legendTitle,
+                        status: formValues.imageStatus
+                    }
+                    this.addToProductDetails(productDetails)
+                    //this.addToFilteredProductDetails(productDetails)
+
+                    //display the ProductDetails component and refesh the component
                     this.currentComponent = 'ProductDetails'
                     this.refreshComponent()
 
                 } else {
+                    //On failure, display the error and return to the UpsertForm so that the user input is not lost.
                     this.$refs.alert.displayResult("error","Something Went Wrong", "Response code: " + res.status)
                     this.currentComponent = 'UpsertForm'
                 }
