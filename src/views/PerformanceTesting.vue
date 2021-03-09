@@ -9,11 +9,6 @@
             <v-col cols="2">
                 <SearchBar v-if="currentComponent == 'ProductDetails'" v-on:search-typeahead="filterProductList"/>
             </v-col>
-            <v-col cols="1">
-                <v-btn v-if="currentComponent == 'ProductDetails'" icon @click="launchUpsert_Create">
-                    <v-icon large>{{ "mdi-plus" }}</v-icon>
-                </v-btn>
-            </v-col>
         </v-row>
         <v-row>
             <v-spacer/>
@@ -27,7 +22,7 @@
                 <v-btn @click="retrieveProductImages('https://api.mocki.io/v1/f8e1698d')" elevation="2">Load 10000 Images</v-btn>    
             </v-col>
             <v-col cols="2">
-                <v-btn @click="retrieveProductImages('https://api.mocki.io/v1/d4b987e1')" elevation="2">Load 10000 High-Res Images</v-btn>    
+                <v-btn @click="retrieveProductImages('https://api.mocki.io/v1/f093d2fa')" elevation="2">Load 10000 High-Res Images</v-btn>    
             </v-col>
             <v-spacer/>
         </v-row>
@@ -53,6 +48,7 @@
 <script>
 import axios from 'axios';
 import LoadingAnimation from '@/components/animations/VueSimpleSpinner.vue';
+import {mapActions} from 'vuex';
 import ProductDetails from '@/components/ProductCardDisplay.vue';
 import SearchBar from '@/components/SearchBar.vue';
 
@@ -96,25 +92,26 @@ export default {
         
     },
     methods: {
+        ...mapActions([
+            'resetProductDetails'
+        ]),
         retrieveProductImages(api)
         {
             this.currentComponent = 'LoadingAnimation'
-            this.productDetails = []
             axios.get(api)
             .then(res => {
-                this.productList = res.data 
-                for (var i = 0; i < this.productList.length; i++) {
-                    this.productDetails.push({
-                        id: this.productList[i].id,
-                        image: this.productList[i].image,
-                        title: this.productList[i].name,
-                        subtitle: this.productList[i].fileName,
-                        details: this.productList[i].legendTitle,
-                        status: this.productList[i].imageStatus
-                    })
-                }
-                this.filteredProductDetails = this.productDetails
-                this.currentComponent = 'ProductDetails'      
+                this.productList = res.data
+                let products = res.data.map(value => {return  {
+                        id: value.id,
+                        image: value.image,
+                        title: value.name,
+                        subtitle: value.fileName,
+                        details: value.legendTitle,
+                        status: value.imageStatus,
+                    }
+                })
+                this.resetProductDetails(products)
+                this.currentComponent = 'ProductDetails'
             })
             .catch(err => console.log(err));
         },
