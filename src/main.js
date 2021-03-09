@@ -6,8 +6,10 @@ import './assets/formulate.css';
 import VueFormulate from '@braid/vue-formulate';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import store from './store';
+import VuePapaParse from 'vue-papa-parse'
 
 Vue.use(VueFormulate)
+Vue.use(VuePapaParse)
 Vue.config.productionTip = false
 
 new Vue({

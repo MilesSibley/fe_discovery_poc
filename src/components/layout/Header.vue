@@ -5,6 +5,7 @@
             <router-link to="/POC">Original POC</router-link> |
             <router-link to="/ImageUploader">Image Uploader</router-link> |
             <router-link to="/PerformanceTesting">Large Data Sets</router-link> |
+            <router-link to="/MassUpload">Mass Upload</router-link> |
             <router-link to="/Scratchpad">Scratchpad</router-link>
         </div>
     </header>

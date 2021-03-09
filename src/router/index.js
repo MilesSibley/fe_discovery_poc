@@ -31,6 +31,12 @@ const routes = [
     name: 'PerformanceTesting',
     component: () => import('../views/PerformanceTesting.vue'),
     props: true
+  },
+  {
+    path: '/MassUpload',
+    name: 'MassUpload',
+    component: () => import('../views/MassUpload.vue'),
+    props: true
   }
 ]
 
