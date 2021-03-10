@@ -49,12 +49,13 @@
                                     </v-text-field>
                                 </template>
                                 <template v-slot:[`item.longDescription`] ="{ item }">
-                                    <v-text-field
+                                    <v-textarea
                                         ref="longDescription"
                                         v-model="item.longDescription"
                                         :rules = "[...requiredField, ...maxLength]"
+                                        rows="1"
                                     >
-                                    </v-text-field>
+                                    </v-textarea>
                                 </template>
                                 <template v-slot:[`item.status`] ="{ item }">
                                     <v-select
@@ -69,7 +70,7 @@
                                     <v-text-field
                                         ref="usd"
                                         v-model="item.usd"
-                                        :rules = "requiredField"
+                                        :rules = "[...requiredField, ...isNumber]"
                                         prefix="$"
                                     >
                                     </v-text-field>
@@ -78,7 +79,7 @@
                                     <v-text-field
                                         ref="gbp"
                                         v-model="item.gbp"
-                                        :rules = "requiredField"
+                                        :rules = "[...requiredField, ...isNumber]"
                                         prefix="$"
                                     >
                                     </v-text-field>
@@ -87,7 +88,7 @@
                                     <v-text-field
                                         ref="euro"
                                         v-model="item.euro"
-                                        :rules = "requiredField"
+                                        :rules = "[...requiredField, ...isNumber]"
                                         prefix="$"
                                     >
                                     </v-text-field>
@@ -161,10 +162,13 @@
                     // }
                 ],
                 requiredField: [
-                    value => !!value || 'This is a required field.',
+                    value => !!value || 'This is a required field.'
                 ],
                 maxLength: [
-                    value => (value.length < 65) || 'Max 65 characters',
+                    value => (value.length < 65) || 'Max 65 characters.'
+                ],
+                isNumber: [
+                    value => Number.isInteger(Number(value)) || "The value must be an integer."
                 ]
             }
         },
