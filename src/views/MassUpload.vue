@@ -3,7 +3,6 @@
         <v-app>
             <v-container>
                 <v-row>
-                    <v-col cols="1"/>
                     <v-col cols="6">
                         <h1 >Mass Upload</h1>
                         
@@ -22,21 +21,21 @@
                         />
                     </v-col>
                 </v-row>
-                <v-row>
+                <v-row v-if="products.length > 0" >
                     <v-col cols="3">
                         <div class="double-wide">
-                            <FormulateInput v-if="products.length > 0" type="submit" label="Validate Data" @click="validateDatatable" /> 
-                            <FormulateInput v-if="products.length > 0" type="submit" label="Upload" @click="uploadProducts" />                           
+                            <v-btn class="mr-4" color="warning" @click="validateDatatable">Validate Data</v-btn>
+                            <v-btn class="mr-4" color="success" :disabled="apiIsOffline" @click="uploadProducts">Upload Data</v-btn>
                         </div>
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="12">
+                    <v-col cols="12" v-if="products.length > 0" >
                         <v-form ref="form">
                             <v-data-table
                                 :headers="headers"
                                 :items="products"
-                                :items-per-page="25"
+                                :items-per-page="10"
                                 class="elevation-1"
                             >
                             
@@ -104,7 +103,7 @@
                 <v-row>
                     <v-spacer></v-spacer>
                     <v-col cols="6">
-                        <h3 style="color:red">{{APIStatus}}</h3>
+                        <h3 v-if=apiIsOffline style="color:red">API is currently offline.</h3>
                     </v-col>
                 </v-row>
             </v-container>
@@ -120,14 +119,14 @@
             axios.get("http://localhost:3000/products")
                 .then((res) => {
                     if (res.status == 200) {
-                        this.APIStatus = ''
+                        this.apiIsOffline = false
                     }
                 })
                 .catch((err) => console.log(err));
         },
         data () {
             return {
-                APIStatus: 'API is Offline',
+                apiIsOffline: true,
                 components: { VueCsvImport },
                 headers: [
                     {
@@ -143,6 +142,7 @@
                     { text: 'Notes', value: 'uploadNotes' },
                 ],
                 products: [
+                    // //Test Data
                     // {
                     //     catnum: 'RDP-343-025',
                     //     longDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus egestas gravida eros, volutpat pretium arcu accumsan at. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus egestas gravida eros, volutpat pretium arcu accumsan at. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus egestas gravida eros, volutpat pretium arcu accumsan at.',
@@ -183,8 +183,7 @@
             updateProductsArray(data){
                 //Default the uploadStatus and uploadNotes to empty strings
                 data.map(product => {
-                    product.uploadStatus = ''
-                    product.uploadNotes = ''
+                    this.updateUploadStatus(product, '','')
                 })
 
                 this.products = data
@@ -195,36 +194,46 @@
 
                 //For each product, validate the fields, call the API, and update the status
                 this.products.map(product => {
-                    if(this.validateProduct(product)){
-                        //Set up API arguements
-                        let payload = {
-                            catnum: product.catnum,
-                            description: product.longDescription,
-                            productStatus: product.status,
-                            naPricing: product.usd,
-                            euroPricing: product.euro,
-                            gbpPricing: product.gbp                            
-                        }
-                        //call API
-                        axios.post("http://localhost:3000/products",payload)
-                        .then((res) => {
-                            if (res.status == 201) {
-                                product.uploadStatus = 'success'
-                            } else {
-                                product.uploadStatus = 'failure'
+                    //If we have already successfully uploaded the product, skip it.
+                    if(product.uploadStatus != 'success')
+                    {
+                        //Validate the data being uploaded 
+                        if(this.validateProduct(product)){
+                            //Set up API arguements
+                            let payload = {
+                                catnum: product.catnum,
+                                description: product.longDescription,
+                                productStatus: product.status,
+                                naPricing: product.usd,
+                                euroPricing: product.euro,
+                                gbpPricing: product.gbp                            
                             }
-                        })
-                        .catch((err) => console.log(err));
+                            //call API
+                            axios.post("http://localhost:3000/products",payload)
+                            .then((res) => {
+                                if (res.status == 201) {
+                                    this.updateUploadStatus(product, 'success','')
+                                } else {
+                                    this.updateUploadStatus(product, 'failure','')
+                                }
+                            })
+                            .catch((err) => {
+                                console.log(err)
+                                this.updateUploadStatus(product, 'failure','API call hit an error.')
+                            });
+                        }
+                        else{
 
-                        //Update status and Notes
-                        product.uploadStatus = 'success'
-                    }
-                    else{
-                        product.uploadStatus = 'failure'
-                        product.uploadNotes = 'Entry did not pass validation.'
+                            this.updateUploadStatus(product, 'failure','Entry did not pass validation.')
+                        }
                     }
                     
                 })
+            },
+            updateUploadStatus(product, status, notes)
+            {
+                product.uploadStatus = status
+                product.uploadNotes = notes
             },
             validateDatatable(){
                 this.$refs.form.validate()
