@@ -30,7 +30,7 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="12" v-if="products.length > 0" >
+                    <v-col cols="12">
                         <v-form ref="form">
                             <v-data-table
                                 :headers="headers"
@@ -245,22 +245,24 @@
             validateProduct(product){
                 let isValid = true
                 
-                if(product.catnum == "")
-                    isValid = false
-                if(product.longDescription == "")
-                    isValid = false
-                if(product.status == "")
-                    isValid = false
-                if(product.usd == "")
-                    isValid = false
-                if(product.gbp == "")
-                    isValid = false
-                if(product.euro == "")
-                    isValid = false
-                               
+                //Check for required fields
+                if(product.catnum == "" ||
+                    product.longDescription == "" ||
+                    product.status == "" ||
+                    product.usd == "" ||
+                    product.gbp == "" ||
+                    product.euro == ""){
+                        isValid = false
+                    }
+                    
+                //Check for max length
                 if( product.longDescription.length > 65 ){
-                    console.log(product.longDescription + "is too long")
                     isValid = false
+                }
+
+                //Check that the price fields are numbers
+                if(!Number.isInteger(Number(product.usd)) || !Number.isInteger(Number(product.gbp)) || !Number.isInteger(Number(product.euro))){
+                     isValid = false
                 }
                 
                 return isValid                
